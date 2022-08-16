@@ -46,8 +46,6 @@ export default function useTasks() {
     }
 
      const updateTask = async (task, title) => {
-        console.log(task.id)
-        console.log(title)
         if (title) {
             task.title = title
         }
