@@ -24,43 +24,25 @@ export default function useTasks() {
             })
     }
 
-    const storeTask = async (task, reload) => {
+    const storeTask = async (task) => {
         if (isLoading.value) return
 
-        isLoading.value = true
+        // isLoading.value = true
         validationErrors.value = {}
 
-        axios.post('/api/tasks', task)
-            .then(response => {
-                if (reload) {
-                    routes.go(0)
-                }
-                router.push({ name: 'task.index'})
-            })
-            .catch(error => {
-                if (error.response?.data) {
-                    validationErrors.value = error.response.data.errors
-                }
-            })
-            .finally(() => isLoading.value = false)
+        let result = await axios.post('/api/tasks', task)
+
+        return result.data.data
     }
 
-     const updateTask = async (task, title) => {
-        if (title) {
-            task.title = title
-        }
-
+     const updateTask = async (task) => {
         axios.put('/api/tasks/' + task.id, task)
-            .then(response => {
-                router.push({ name: 'task.index'})
-            })
+            .then(response => {})
     }
 
     const destroyTask = async (taskId) => {
         axios.delete('/api/tasks/' + taskId)
-            .then(response => {
-                task.value = response.data.data
-            })
+            .then(response => {})
     }
 
     return { tasks, task, getTask, getTasks, storeTask, updateTask, destroyTask, validationErrors, isLoading }

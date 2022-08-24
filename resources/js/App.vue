@@ -5,7 +5,7 @@
                 <MenuRight />
             </div>
              <div class="col-9">
-               <router-view />
+                 <router-view />
              </div>
         </div>
     </div>
@@ -13,12 +13,10 @@
 
 <script>
     import MenuRight from "./components/MenuRight.vue"
-    import Task from "./components/task/Task.vue"
 
     export default {
         components: {
-            MenuRight,
-            Task
+            MenuRight
         }
     }
 </script>

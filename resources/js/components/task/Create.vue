@@ -33,7 +33,6 @@
 <script>
 import {onMounted, reactive} from "vue";
 import useTasks from "../../composables/tasks.js";
-import taskIndex from "./Index.vue";
 
 import SubTask from "./SubTask.vue";
 
@@ -56,7 +55,6 @@ export default {
         }
     },
     components: {
-        taskIndex,
         SubTask,
     },
     methods: {
