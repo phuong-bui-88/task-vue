@@ -28,7 +28,18 @@
 
             <div class="mb-3">
                 <label for="task-description" class="form-label">Description</label>
-                <textarea v-model="task.description" id="task-description" type="text" class="form-control" rows="3"></textarea>
+                <QuillEditor id="task-description" ref="quillEditor" />
+            </div>
+
+            <div class="mb-3">
+                <file-pond
+                        name="test"
+                        ref="pond"
+                        label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
+                        allow-multiple="true"
+                        v-bind:files="myFiles"
+                        :server="{load, process}"
+                />
             </div>
 
         </div>
@@ -40,16 +51,26 @@ import {onMounted, onUpdated, reactive, ref} from "vue";
 import useTasks from "../../composables/tasks.js";
 import { useRoute } from "vue-router";
 import task from "./Task.vue";
+import axios from "axios";
+
+import {uploadFilePond} from "../../composables/file_pond.js";
+// import {QuillEditor} from "@vueup/vue-quill";
+// import { ImageDrop } from "quill-image-drop-module";
 
 export default {
+    // components: {QuillEditor},
     props: {
         isSamePage: Boolean,
         taskId: String,
         indexItem: Number,
     },
     emits: ['changedTitle', 'deletedTask', 'resetIsSamePage'],
-    // inheritAttrs:false,
 
+    data() {
+        let myFiles = []
+
+        return { myFiles }
+    },
     setup(props) {
 
         const { task, getTask, updateTask, destroyTask, validationErrors, isLoading } = useTasks()
@@ -67,10 +88,23 @@ export default {
     },
 
     watch: {
+        task: function (newVal, oldVal) {
+            if (newVal) {
+                this.$refs.quillEditor.setHTML(newVal.description)
+
+                let myFiles = []
+                newVal.documents.map(function(value, key) {
+                    myFiles.push({
+                        source: value,
+                        options: { type: 'local'}
+                    })
+                })
+
+                this.myFiles = myFiles
+            }
+        },
         isSamePage: function (newVal, oldVal) {
             if (newVal === true) {
-                console.log('is same page')
-                console.log(this.isOpenTaskStatus)
                 // case open status is true then
                 if (this.isOpenTaskStatus === true) {
                     this.onCloseTaskAction()
@@ -86,6 +120,7 @@ export default {
         $route(to, from) {
             if (to.params.taskId) {
                 this.getTask(to.params.taskId)
+
                 this.isOpenTaskStatus = true
             }
         }
@@ -100,6 +135,7 @@ export default {
                 event.preventDefault()
             }
 
+            this.task.description = this.$refs.quillEditor.getHTML()
             this.updateTask(this.task)
         },
         onDeleteTask() {
@@ -112,6 +148,24 @@ export default {
             this.$refs.close.click()
             this.isClosedTask=false
             this.isOpenTaskStatus = false
+        },
+        load(url, load, error, progress, abort, headers) {
+            fetch(url)
+                .then(res => {
+                    res.blob().then(load)
+                })
+            // https://zelen-co.com/articles/file-upload-with-vuejs-filepond-and-firebase/
+        },
+        process(fileName, file, metadata, load, error, progress, abort) {
+            const field = {
+                name: 'task',
+                id: this.task.id
+            }
+
+            uploadFilePond(file, progress, field)
+                .then(url => {
+                    load(url)
+                })
         },
     },
     mounted() {
