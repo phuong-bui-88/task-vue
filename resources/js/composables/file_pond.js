@@ -23,6 +23,10 @@ export const uploadFilePond = (file, progress, field) => {
     })
 }
 
-export const removeFilePond = (file) => {
+export const removeFilePond = (fileUrl) => {
+    let data = {
+        fileUrl: fileUrl,
+    }
 
+    return axios.delete('/upload-image', { data: data })
 }

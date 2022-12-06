@@ -38,7 +38,7 @@
                         label-idle="Drop files here or <span class='filepond--label-action'>Browse</span>"
                         allow-multiple="true"
                         v-bind:files="myFiles"
-                        :server="{load, process}"
+                        :server="{load, process, revert, remove}"
                 />
             </div>
 
@@ -53,7 +53,7 @@ import { useRoute } from "vue-router";
 import task from "./Task.vue";
 import axios from "axios";
 
-import {uploadFilePond} from "../../composables/file_pond.js";
+import {uploadFilePond, removeFilePond} from "../../composables/file_pond.js";
 // import {QuillEditor} from "@vueup/vue-quill";
 // import { ImageDrop } from "quill-image-drop-module";
 
@@ -156,6 +156,10 @@ export default {
                 })
             // https://zelen-co.com/articles/file-upload-with-vuejs-filepond-and-firebase/
         },
+        revert: (uniqueFileId, load, error) => {
+            removeFilePond(uniqueFileId)
+            load()
+        },
         process(fileName, file, metadata, load, error, progress, abort) {
             const field = {
                 name: 'task',
@@ -167,6 +171,10 @@ export default {
                     load(url)
                 })
         },
+        remove(source, load, error) {
+            removeFilePond(source)
+            load()
+        }
     },
     mounted() {
         this.$refs.firstUserName.click()
