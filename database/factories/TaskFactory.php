@@ -19,6 +19,8 @@ class TaskFactory extends Factory
          return [
             'title' => fake()->name(),
             'description' => fake()->paragraphs(2, true),
+            'start_date' => now(),
+            'end_date' => now(),
         ];
     }
 }

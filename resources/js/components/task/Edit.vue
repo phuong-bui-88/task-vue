@@ -19,7 +19,7 @@
             </div>
             <div class="mb-3">
                 <label for="task-title" class="form-label">Title</label>
-                <input v-model="task.title" id="task-title" class="form-control" type="text" @keyup="$emit('changedTitle', indexItem, $event.target.value)">
+                <input v-model="task.title" id="task-title" class="form-control" type="text" @keyup="$emit('changedTitle', indexItem, $event.target.value)"  @blur="updateTask">
 
                 <div v-for="message in validationErrors?.title">
                     {{ message }}
@@ -28,7 +28,7 @@
 
             <div class="mb-3">
                 <label for="task-description" class="form-label">Description</label>
-                <QuillEditor id="task-description" ref="quillEditor" />
+                <QuillEditor id="task-description" ref="quillEditor" @selectionChange="updateTask($event)"/>
             </div>
 
             <div class="mb-3">
@@ -84,7 +84,7 @@ export default {
             }
         })
 
-        return { task, route, isClosedTask, isOpenTaskStatus, getTask, updateTask, destroyTask, validationErrors, isLoading }
+        return { task, route, isClosedTask, isOpenTaskStatus, getTask, updateTask, destroyTask, validationErrors, isLoading}
     },
 
     watch: {
@@ -115,7 +115,6 @@ export default {
 
                 this.$emit('resetIsSamePage', false)
             }
-
         },
         $route(to, from) {
             if (to.params.taskId) {
@@ -134,14 +133,28 @@ export default {
             if (this.isSamePage == false) {
                 event.preventDefault()
             }
+        },
+        updateTask(event) {
+            // case description
+            let range = event.oldRange
+            let source = event.source
 
-            this.task.description = this.$refs.quillEditor.getHTML()
+            if (source == 'user') {
+                if (range) {
+                    console.log('updated')
+                    this.task.description = this.$refs.quillEditor.getHTML()
+                    this.updateTask(this.task)
+                }
+                return
+            }
+
             this.updateTask(this.task)
         },
         onDeleteTask() {
             this.destroyTask(this.task.id)
             this.$emit('deletedTask')
             this.onCloseTaskAction()
+            this.$router.push({ name : 'task.index' })
         },
         onCloseTaskAction() {
             this.isClosedTask=true

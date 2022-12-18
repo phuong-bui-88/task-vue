@@ -14,13 +14,17 @@ class TaskResource extends JsonResource
      */
     public function toArray($request)
     {
-
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->when($this->description, $this->description),
-            'created_at' => $this->created_at->toDateString(),
-            'documents' => $this->when($request->routeIs('tasks.show'), $this->documents)
-        ];
+        try {
+            return [
+                'id' => $this->id,
+                'title' => $this->title,
+                'description' => $this->when($this->description, $this->description),
+                'created_at' => $this->created_at->toDateString(),
+                'documents' => $this->when($request->routeIs('tasks.show'), $this->documents)
+            ];
+        }
+        catch(\Exception $e) {
+            info(print_r($this));
+        }
     }
 }

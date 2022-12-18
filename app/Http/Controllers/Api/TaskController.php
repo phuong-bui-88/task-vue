@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Jobs\ProcessCalendarTask;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\GoogleCalendar\Event;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\Http\Response
      */
     public function index()
     {
@@ -24,11 +27,13 @@ class TaskController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return TaskResource
      */
     public function store(StoreTaskRequest $request)
     {
         $task = Task::create($request->all());
+
+        ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
 
         return new TaskResource($task);
     }
@@ -37,7 +42,7 @@ class TaskController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return TaskResource
      */
     public function show($id)
     {
@@ -51,23 +56,32 @@ class TaskController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|string
      */
     public function update(Task $task, Request $request)
     {
         $task->update($request->all());
-        return new TaskResource($task);
+        ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
+            $task, ProcessCalendarTask::UPDATE
+        );
+
+        return 'ok';
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|string
      */
     public function destroy(Task $task)
     {
+        ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
+            null, ProcessCalendarTask::DELETE, $task->calendar_id
+        );
+
         $task->delete();
         return 'ok';
     }
+
 }

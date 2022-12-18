@@ -21,6 +21,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->longText('description')->nullable();
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->string('calendar_id')->nullable();
+            $table->string('task_id')->nullable();
             $table->timestamps();
         });
     }

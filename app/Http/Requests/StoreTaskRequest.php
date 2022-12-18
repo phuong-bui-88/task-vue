@@ -27,4 +27,21 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required'
         ];
     }
+
+    public function getValidatorInstance()
+    {
+        $this->setDefaultDate();
+        return parent::getValidatorInstance();
+    }
+
+    protected function setDefaultDate()
+    {
+        if (!$this->request->has('start_date')) {
+            $this->merge(['start_date' => now()]);
+        }
+
+        if (!$this->request->has('end_date')) {
+            $this->merge(['end_date' => now()]);
+        }
+    }
 }
