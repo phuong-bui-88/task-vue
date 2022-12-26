@@ -38,8 +38,5 @@ class UploadImageController extends Controller
         }
 
         return Media::find($id)->delete();
-
-        //$task = Task::findOrFail($request->task);
-        //return $task->getMedia()->where('file_name', $path['basename'])->first()->delete();
     }
 }

@@ -7,6 +7,7 @@
     "devDependencies": {
         "axios": "^0.25",
         "lodash": "^4.17.19",
+        "moment": "^2.29.4",
         "postcss": "^8.1.14",
         "sass": "^1.54.3"
     },
@@ -21,6 +22,7 @@
         "laravel-vite-plugin": "^0.5.0",
         "quill-image-drop-module": "^1.0.3",
         "quill-image-uploader": "^1.2.3",
+        "v-calendar": "^3.0.0-alpha.8",
         "vite": "^3.0.2",
         "vue": "^3.2.36",
         "vue-filepond": "^7.0.3",

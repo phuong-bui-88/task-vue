@@ -28,7 +28,21 @@
 
             <div class="mb-3">
                 <label for="task-description" class="form-label">Description</label>
-                <QuillEditor id="task-description" ref="quillEditor" @selectionChange="updateTask($event)"/>
+                <QuillEditor id="task-description" ref="quillEditor" @focusout="updateTask($event)"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="task-description" class="form-label">Date</label>
+
+                <DatePicker v-model="task.start_date" @dayclick="updateTask" ref="task-date">
+                     <template v-slot="{ inputValue, inputEvents }">
+                        <input
+                          class="bg-white border px-2 py-1 rounded"
+                          :value="inputValue"
+                          v-on="inputEvents"
+                        />
+                     </template>
+                </DatePicker>
             </div>
 
             <div class="mb-3">
@@ -51,14 +65,13 @@ import {onMounted, onUpdated, reactive, ref} from "vue";
 import useTasks from "../../composables/tasks.js";
 import { useRoute } from "vue-router";
 import task from "./Task.vue";
-import axios from "axios";
 
 import {uploadFilePond, removeFilePond} from "../../composables/file_pond.js";
-// import {QuillEditor} from "@vueup/vue-quill";
-// import { ImageDrop } from "quill-image-drop-module";
+import {Calendar, DatePicker} from "v-calendar";
+import DateFilter from  "../../filters/date.js";
 
 export default {
-    // components: {QuillEditor},
+    components: {DatePicker, Calendar},
     props: {
         isSamePage: Boolean,
         taskId: String,
@@ -68,7 +81,6 @@ export default {
 
     data() {
         let myFiles = []
-
         return { myFiles }
     },
     setup(props) {
@@ -90,7 +102,9 @@ export default {
     watch: {
         task: function (newVal, oldVal) {
             if (newVal) {
-                this.$refs.quillEditor.setHTML(newVal.description)
+
+                let description = (newVal.description) ?? ''
+                this.$refs.quillEditor.setHTML(description)
 
                 let myFiles = []
                 newVal.documents.map(function(value, key) {
@@ -135,19 +149,8 @@ export default {
             }
         },
         updateTask(event) {
-            // case description
-            let range = event.oldRange
-            let source = event.source
-
-            if (source == 'user') {
-                if (range) {
-                    console.log('updated')
-                    this.task.description = this.$refs.quillEditor.getHTML()
-                    this.updateTask(this.task)
-                }
-                return
-            }
-
+            this.task.start_date = DateFilter(this.task.start_date)
+            this.task.description = this.$refs.quillEditor.getHTML()
             this.updateTask(this.task)
         },
         onDeleteTask() {

@@ -58,7 +58,7 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response|string
      */
-    public function update(Task $task, Request $request)
+    public function update(Task $task, StoreTaskRequest $request)
     {
         $task->update($request->all());
         ProcessCalendarTask::dispatchIf(isset($task->calendar_id),

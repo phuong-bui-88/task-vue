@@ -1,3 +1,14 @@
+// Import Vue FilePond
+import vueFilePond from 'vue-filepond';
+
+// Import FilePond styles
+import "filepond/dist/filepond.min.css";
+// Import image preview plugin styles
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+
+// Import image preview and file type validation plugins
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
 export const uploadFilePond = (file, progress, field) => {
     const formData = new FormData();
@@ -29,4 +40,11 @@ export const removeFilePond = (fileUrl) => {
     }
 
     return axios.delete('/upload-image', { data: data })
+}
+
+export const setupFilePond = () => {
+    return vueFilePond(
+          FilePondPluginFileValidateType,
+          FilePondPluginImagePreview
+    )
 }
