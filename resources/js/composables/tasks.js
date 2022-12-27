@@ -1,49 +1,55 @@
 import { ref } from 'vue'
 import axios from "axios"
-import { useRouter} from 'vue-router'
-import routes from "../routes";
+
+const tasks = ref({})
+const isSamePage = ref(false)
 
 export default function useTasks() {
-    const tasks = ref({})
     const task = ref({})
-    const router = useRouter()
-    const validationErrors = ref({})
-    const isLoading = ref(null)
 
     const getTasks = async () => {
-        axios.get('/api/tasks')
-            .then(response => {
-                tasks.value = response.data.data
-            })
+        let result = await axios.get('/api/tasks')
+        tasks.value = result.data.data
     }
 
     const getTask = async (taskId) => {
-        axios.get('/api/tasks/' + taskId)
-            .then(response => {
-                task.value = response.data.data
-            })
+        let result = await axios.get('/api/tasks/' + taskId)
+
+        task.value = result.data.data
     }
 
     const storeTask = async (task) => {
-        if (isLoading.value) return
-
-        // isLoading.value = true
-        validationErrors.value = {}
-
         let result = await axios.post('/api/tasks', task)
+        result = result.data.data
+        tasks.value.push(result)
 
-        return result.data.data
+        return result
     }
 
-     const updateTask = async (task) => {
-        axios.put('/api/tasks/' + task.id, task)
-            .then(response => {})
+     const updateTask = async (task, includeTasks = false) => {
+        let result = await axios.put('/api/tasks/' + task.id, task)
+
+        if (includeTasks && result.status === 200) {
+            tasks.value.forEach((item, index) => {
+                if (item.id === task.id) {
+                    tasks.value[index] = task
+                    return true
+                }
+            })
+        }
     }
 
-    const destroyTask = async (taskId) => {
-        axios.delete('/api/tasks/' + taskId)
-            .then(response => {})
+    const destroyTask = async (taskId, includeTasks = false) => {
+        let result = await axios.delete('/api/tasks/' + taskId)
+        if (includeTasks && result.status === 200) {
+            tasks.value.forEach((item, index) => {
+                if (item.id === taskId) {
+                    tasks.value.splice(index, 1)
+                    return true
+                }
+            })
+        }
     }
 
-    return { tasks, task, getTask, getTasks, storeTask, updateTask, destroyTask, validationErrors, isLoading }
+    return { tasks, task, getTask, getTasks, storeTask, updateTask, destroyTask, isSamePage }
 }

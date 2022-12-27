@@ -1,9 +1,5 @@
 <template>
 
-    <div v-for="message in validationErrors?.title">
-        {{ message }}
-    </div>
-
     <div class="d-none" data-bs-toggle="offcanvas" href="#edit-task" ref="firstUserName">First</div>
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-task" :item="task.id" data-bs-scroll="true" data-bs-backdrop="false" ref="username">
@@ -19,11 +15,8 @@
             </div>
             <div class="mb-3">
                 <label for="task-title" class="form-label">Title</label>
-                <input v-model="task.title" id="task-title" class="form-control" type="text" @keyup="$emit('changedTitle', indexItem, $event.target.value)"  @blur="updateTask">
+                <input v-model="task.title" id="task-title" class="form-control" type="text" @blur="updateTask">
 
-                <div v-for="message in validationErrors?.title">
-                    {{ message }}
-                </div>
             </div>
 
             <div class="mb-3">
@@ -33,7 +26,6 @@
 
             <div class="mb-3">
                 <label for="task-description" class="form-label">Date</label>
-
                 <DatePicker v-model="task.start_date" @dayclick="updateTask" ref="task-date">
                      <template v-slot="{ inputValue, inputEvents }">
                         <input
@@ -73,19 +65,16 @@ import DateFilter from  "../../filters/date.js";
 export default {
     components: {DatePicker, Calendar},
     props: {
-        isSamePage: Boolean,
         taskId: String,
         indexItem: Number,
     },
-    emits: ['changedTitle', 'deletedTask', 'resetIsSamePage'],
-
     data() {
         let myFiles = []
         return { myFiles }
     },
     setup(props) {
 
-        const { task, getTask, updateTask, destroyTask, validationErrors, isLoading } = useTasks()
+        const { task, getTask, updateTask, destroyTask, isSamePage } = useTasks()
         const route = useRoute()
         // isOpenCloseTaskStatus is open or close task status
         const {isClosedTask, isOpenTaskStatus} = ref(false)
@@ -96,13 +85,12 @@ export default {
             }
         })
 
-        return { task, route, isClosedTask, isOpenTaskStatus, getTask, updateTask, destroyTask, validationErrors, isLoading}
+        return { task, route, isClosedTask, isOpenTaskStatus, getTask, updateTask, destroyTask, isSamePage}
     },
 
     watch: {
         task: function (newVal, oldVal) {
             if (newVal) {
-
                 let description = (newVal.description) ?? ''
                 this.$refs.quillEditor.setHTML(description)
 
@@ -127,7 +115,7 @@ export default {
                     this.isOpenTaskStatus = true
                 }
 
-                this.$emit('resetIsSamePage', false)
+                this.isSamePage = false
             }
         },
         $route(to, from) {
@@ -151,11 +139,10 @@ export default {
         updateTask(event) {
             this.task.start_date = DateFilter(this.task.start_date)
             this.task.description = this.$refs.quillEditor.getHTML()
-            this.updateTask(this.task)
+            this.updateTask(this.task, true)
         },
         onDeleteTask() {
-            this.destroyTask(this.task.id)
-            this.$emit('deletedTask')
+            this.destroyTask(this.task.id, true)
             this.onCloseTaskAction()
             this.$router.push({ name : 'task.index' })
         },

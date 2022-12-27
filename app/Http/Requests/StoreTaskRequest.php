@@ -44,10 +44,5 @@ class StoreTaskRequest extends FormRequest
         if (!$this->request->has('end_date')) {
             $this->merge(['end_date' => now()]);
         }
-
-        if ($this->request->has('start_date')) {
-            $start_date = Carbon::parse($this['start_date']);
-            $this->merge(['start_date' => $start_date]);
-        }
     }
 }

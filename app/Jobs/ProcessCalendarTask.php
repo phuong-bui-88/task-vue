@@ -69,16 +69,14 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
 
         $event = Event::find($this->task->calendar_id);
         $event->name = $this->task->title;
+        $event->startDate = Carbon::parse($this->task->start_date);
+        $event->endDate = Carbon::parse($this->task->start_date);
         $event->save();
     }
 
     protected function processDelete()
     {
-        info('first');
         $e = Event::find($this->calendarId);
-        info($e->googleEvent->getStatus());
-        info((array) $e);
-        info('last');
 
         if (!$event = Event::find($this->calendarId)) return;
         if (self::STATUS_CANCELLED == $event->googleEvent->getStatus()) return;
