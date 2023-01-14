@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Constants\ConstantBase;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskResource extends JsonResource
@@ -17,9 +19,9 @@ class TaskResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'description' => $this->when($this->description, $this->description),
-            'created_at' => $this->created_at->toDateString(),
-            'start_date' => $this->when($request->routeIs('tasks.show'), $this->start_date),
+            'description' => $this->whenNotNull($this->description),
+            'created_at' => $this->whenNotNull($this->created_at),
+            'start_date' => $this->whenNotNull($this->start_date),
             'documents' => $this->when($request->routeIs('tasks.show'), $this->documents)
         ];
     }

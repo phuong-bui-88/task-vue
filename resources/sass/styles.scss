@@ -1,2 +1,7 @@
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
+
+.left-calendar {
+    display: flex;
+    justify-content: flex-end;
+}

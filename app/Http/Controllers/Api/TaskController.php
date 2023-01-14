@@ -8,19 +8,58 @@ use App\Http\Resources\TaskResource;
 use App\Jobs\ProcessCalendarTask;
 use App\Models\Task;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\GoogleCalendar\Event;
+use MeiliSearch\Endpoints\Indexes;
 
 class TaskController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TaskResource::collection(Task::select('id', 'title', 'created_at')->get());
+        $showData = [
+            Task::ALL => true,
+            Task::REMAIN => false,
+            Task::OVER_DATE => false
+        ];
+
+        if ($status = $request->status) {
+            if (Task::REMAIN == $request->status) {
+                $showData[Task::REMAIN] = true;
+            }
+            else {
+                $showData[Task::OVER_DATE] = true;
+            }
+            $showData[Task::ALL] = false;
+        }
+
+        $tasks = [];
+        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN]);
+        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL]);
+        $overDateCount = $this->searchTasks($tasks, '<', $showData[Task::OVER_DATE]);
+
+        return TaskResource::collection($tasks)
+            ->additional(compact('remainCount', 'allCount', 'overDateCount'));
+    }
+
+    public function searchTasks(&$tasks, $operator, $data)
+    {
+        $query = Task::search('', function ($meiliSearch, string $query, array $options ) use ( $operator ) {
+            if ($operator) {
+                $options['filter'] = sprintf('start_date_timestamp %s %s', $operator, now()->timestamp);
+            }
+            return $meiliSearch->search( $query, $options );
+        });
+
+        if ($data) {
+            $tasks = $query->get();
+        }
+
+        return $query->count();
     }
 
     /**

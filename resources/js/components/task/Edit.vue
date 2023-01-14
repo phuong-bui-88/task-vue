@@ -15,18 +15,13 @@
             </div>
             <div class="mb-3">
                 <label for="task-title" class="form-label">Title</label>
-                <input v-model="task.title" id="task-title" class="form-control" type="text" @blur="updateTask">
+                <input v-model="task.title" id="task-title" class="form-control" type="text" @blur="updateTaskVue">
 
-            </div>
-
-            <div class="mb-3">
-                <label for="task-description" class="form-label">Description</label>
-                <QuillEditor id="task-description" ref="quillEditor" @focusout="updateTask($event)"/>
             </div>
 
             <div class="mb-3">
                 <label for="task-description" class="form-label">Date</label>
-                <DatePicker v-model="task.start_date" @dayclick="updateTask" ref="task-date">
+                <DatePicker v-model="task.start_date" @dayclick="updateTaskDate" ref="task-date">
                      <template v-slot="{ inputValue, inputEvents }">
                         <input
                           class="bg-white border px-2 py-1 rounded"
@@ -35,6 +30,11 @@
                         />
                      </template>
                 </DatePicker>
+            </div>
+
+            <div class="mb-3">
+                <label for="task-description" class="form-label">Description</label>
+                <QuillEditor id="task-description" ref="quillEditor" @focusout="updateTaskVue($event)"/>
             </div>
 
             <div class="mb-3">
@@ -73,9 +73,9 @@ export default {
         return { myFiles }
     },
     setup(props) {
-
-        const { task, getTask, updateTask, destroyTask, isSamePage } = useTasks()
+        const { task, getTask, getTasks, updateTask, destroyTask, isSamePage } = useTasks()
         const route = useRoute()
+
         // isOpenCloseTaskStatus is open or close task status
         const {isClosedTask, isOpenTaskStatus} = ref(false)
 
@@ -85,7 +85,7 @@ export default {
             }
         })
 
-        return { task, route, isClosedTask, isOpenTaskStatus, getTask, updateTask, destroyTask, isSamePage}
+        return { task, route, isClosedTask, isOpenTaskStatus, getTask, getTasks, updateTask, destroyTask, isSamePage}
     },
 
     watch: {
@@ -136,10 +136,14 @@ export default {
                 event.preventDefault()
             }
         },
-        updateTask(event) {
+        updateTaskVue(event) {
             this.task.start_date = DateFilter(this.task.start_date)
             this.task.description = this.$refs.quillEditor.getHTML()
             this.updateTask(this.task, true)
+        },
+        updateTaskDate(event) {
+            this.updateTaskVue()
+            this.getTasks()
         },
         onDeleteTask() {
             this.destroyTask(this.task.id, true)
