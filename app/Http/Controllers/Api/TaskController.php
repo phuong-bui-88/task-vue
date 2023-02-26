@@ -22,42 +22,43 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $showData = [
-            Task::ALL => true,
+            Task::ALL => false,
             Task::REMAIN => false,
             Task::OVER_DATE => false
         ];
 
-        if ($status = $request->status) {
-            if (Task::REMAIN == $request->status) {
-                $showData[Task::REMAIN] = true;
-            }
-            else {
-                $showData[Task::OVER_DATE] = true;
-            }
-            $showData[Task::ALL] = false;
+        if ($request->has('status')) {
+            $showData[$request->status] = true;
         }
 
+        $hasIndex = $request->has('index') ? $request->index : true;
+
         $tasks = [];
-        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN]);
-        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL]);
-        $overDateCount = $this->searchTasks($tasks, '<', $showData[Task::OVER_DATE]);
+        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $hasIndex);
+        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $hasIndex);
+        $overDateCount = $this->searchTasks($tasks, '<', $showData[Task::OVER_DATE], $hasIndex);
 
         return TaskResource::collection($tasks)
             ->additional(compact('remainCount', 'allCount', 'overDateCount'));
     }
 
-    public function searchTasks(&$tasks, $operator, $data)
+    public function searchTasks(&$tasks, $operator, $data, $hasIndex)
     {
-        $query = Task::search('', function ($meiliSearch, string $query, array $options ) use ( $operator ) {
-            if ($operator) {
-                $options['filter'] = sprintf('start_date_timestamp %s %s', $operator, now()->timestamp);
-            }
-            return $meiliSearch->search( $query, $options );
-        });
-
-        if ($data) {
-            $tasks = $query->get();
+        if (!$hasIndex) {
+            $query = ($operator)
+                ? Task::whereDate('start_date', $operator, now())
+                : Task::whereNotNull('start_date');
         }
+        else {
+            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($operator) {
+                ($operator)
+                && $options['filter'] = sprintf('start_date_timestamp %s %s', $operator, now()->timestamp);
+
+                return $meiliSearch->search($query, $options);
+            });
+        }
+
+        ($data) && $tasks = $query->get();
 
         return $query->count();
     }

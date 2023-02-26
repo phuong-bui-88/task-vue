@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import axios from "axios"
 import GlobalConst from  './../consts/base.js'
+import date from "../filters/date.js";
 
 const tasks = ref(false)
 const remainCount = ref(0)
@@ -12,11 +13,14 @@ const taskStatus = ref(GlobalConst.ALL_STATUS)
 export default function useTasks() {
     const task = ref({})
 
-    const getTasks = async (queryTask = '') => {
-        queryTask = (GlobalConst.REMAIN_STATUS == taskStatus.value)
-            ? '?status=1' : queryTask
-        queryTask = (GlobalConst.OVER_DATE_STATUS == taskStatus.value)
-            ? '?status=2' : queryTask
+    const getTasks = async (queryTask = '', hasIndex = true) => {
+        let status = ''
+        status = (GlobalConst.ALL_STATUS == taskStatus.value) ? '?status=0' : status
+        status = (GlobalConst.REMAIN_STATUS == taskStatus.value) ? '?status=1' : status
+        status = (GlobalConst.OVER_DATE_STATUS == taskStatus.value) ? '?status=2' : status
+
+        hasIndex = (hasIndex) ? '' : '&index=0'
+        queryTask = queryTask + status + hasIndex
 
         let result = await axios.get('/api/tasks' + queryTask)
         tasks.value = result.data.data

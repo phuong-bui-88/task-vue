@@ -73,7 +73,7 @@ export default {
         return { myFiles }
     },
     setup(props) {
-        const { task, getTask, getTasks, updateTask, destroyTask, isSamePage } = useTasks()
+        const { task, getTask, getTasks, updateTask, destroyTask, isSamePage, taskStatus } = useTasks()
         const route = useRoute()
 
         // isOpenCloseTaskStatus is open or close task status
@@ -85,7 +85,7 @@ export default {
             }
         })
 
-        return { task, route, isClosedTask, isOpenTaskStatus, getTask, getTasks, updateTask, destroyTask, isSamePage}
+        return { task, route, isClosedTask, isOpenTaskStatus, getTask, getTasks, updateTask, destroyTask, isSamePage, taskStatus}
     },
 
     watch: {
@@ -139,11 +139,13 @@ export default {
         updateTaskVue(event) {
             this.task.start_date = DateFilter(this.task.start_date)
             this.task.description = this.$refs.quillEditor.getHTML()
-            this.updateTask(this.task, true)
+            return this.updateTask(this.task, true)
         },
         updateTaskDate(event) {
             this.updateTaskVue()
-            this.getTasks()
+                .then(function (result) {
+                    this.getTasks('', false)
+                 }.bind(this))
         },
         onDeleteTask() {
             this.destroyTask(this.task.id, true)

@@ -62,7 +62,6 @@ import DateFilter from "../../filters/date.js"
 import GlobalConst from "../../consts/base.js"
 import lo from 'lodash'
 
-
 export default {
     props: {
         editInit: Boolean,
