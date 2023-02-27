@@ -46,7 +46,7 @@ class TaskController extends Controller
     {
         if (!$hasIndex) {
             $query = ($operator)
-                ? Task::whereDate('start_date', $operator, now())
+                ? Task::where('start_date', $operator, now())
                 : Task::whereNotNull('start_date');
         }
         else {

@@ -1,7 +1,6 @@
 <template>
     <div class="left-calendar">
-        <VCalendar :attributes='attributes'>
-          </VCalendar>
+        <VCalendar :attributes='attributes'></VCalendar>
     </div>
 </template>
 
@@ -11,7 +10,7 @@ import {onMounted} from "vue";
 
 export default {
     setup() {
-        const {tasks, getTasks, storeTask, isSamePage } = useTasks()
+        const {tasks, getTasks } = useTasks()
         onMounted(getTasks)
 
         return { tasks }
@@ -38,16 +37,7 @@ export default {
                 })
             })
 
-            // return todos
-
-            return [
-                {
-                    key: 'today',
-                    highlight: true,
-                    dates: new Date(),
-                },
-                // Attributes for todos
-                ...todos.map(todo => ({
+            const todosDot = todos.map(todo => ({
                 dates: todo.dates,
                 dot: {
                     color: todo.color,
@@ -57,7 +47,16 @@ export default {
                     label: todo.description,
                 },
                 customData: todo,
-                })),
+            }))
+
+            return [
+                {
+                    key: 'today',
+                    highlight: true,
+                    dates: new Date(),
+                },
+                // Attributes for todos
+                ...todosDot,
             ];
         },
     },
