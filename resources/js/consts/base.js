@@ -3,6 +3,7 @@ const DATE_FORMAT_DB = 'yyyy-MM-DD HH:mm:ss'
 const ALL_STATUS = 0
 const OVER_DATE_STATUS = 2
 const REMAIN_STATUS = 1
+const TOKEN = 'token'
 
 export default {
     DATE_FORMAT: DATE_FORMAT,
@@ -10,5 +11,7 @@ export default {
 
     ALL_STATUS: ALL_STATUS,
     OVER_DATE_STATUS: OVER_DATE_STATUS,
-    REMAIN_STATUS: REMAIN_STATUS
+    REMAIN_STATUS: REMAIN_STATUS,
+
+    TOKEN: TOKEN,
 }

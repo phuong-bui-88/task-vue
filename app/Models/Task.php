@@ -17,7 +17,7 @@ class Task extends Model implements HasMedia
     const REMAIN = 1;
     const OVER_DATE = 2;
 
-    protected $fillable = ['title', 'description', 'start_date', 'end_date', 'calendar_id', 'task_id'];
+    protected $fillable = ['title', 'description', 'start_date', 'end_date', 'calendar_id', 'task_id', 'user_id'];
 
     public function getDocumentsAttribute()
     {
@@ -31,6 +31,10 @@ class Task extends Model implements HasMedia
         return $documentOutput;
     }
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
     public function toSearchableArray()
     {
         return [
@@ -39,6 +43,7 @@ class Task extends Model implements HasMedia
             'description' => $this->description,
             'start_date' => $this->start_date,
             'start_date_timestamp' => Carbon::parse($this->start_date)->timestamp,
+            'user_id' => $this->user->id,
         ];
     }
 }

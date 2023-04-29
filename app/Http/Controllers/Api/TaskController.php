@@ -21,6 +21,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+
         $showData = [
             Task::ALL => false,
             Task::REMAIN => false,
@@ -32,27 +33,32 @@ class TaskController extends Controller
         }
 
         $hasIndex = $request->has('index') ? $request->index : true;
+        $user = $request->user();
 
         $tasks = [];
-        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $hasIndex);
-        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $hasIndex);
-        $overDateCount = $this->searchTasks($tasks, '<', $showData[Task::OVER_DATE], $hasIndex);
+        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $hasIndex, $user);
+        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $hasIndex, $user);
+        $overDateCount = $this->searchTasks($tasks, '<=', $showData[Task::OVER_DATE], $hasIndex, $user);
 
         return TaskResource::collection($tasks)
             ->additional(compact('remainCount', 'allCount', 'overDateCount'));
     }
 
-    public function searchTasks(&$tasks, $operator, $data, $hasIndex)
+    public function searchTasks(&$tasks, $operator, $data, $hasIndex, $user)
     {
         if (!$hasIndex) {
             $query = ($operator)
                 ? Task::where('start_date', $operator, now())
                 : Task::whereNotNull('start_date');
+
+            $query->where('user_id', $user->id);
         }
         else {
-            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($operator) {
+            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($operator, $user) {
                 ($operator)
-                && $options['filter'] = sprintf('start_date_timestamp %s %s', $operator, now()->timestamp);
+                && $options['filter'][] = sprintf('start_date_timestamp %s %s ', $operator, now()->timestamp);
+
+                $options['filter'][] = sprintf('user_id %s %s', '=', $user->id);
 
                 return $meiliSearch->search($query, $options);
             });
@@ -71,7 +77,7 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Task::create($request->all());
+        $task = Task::create($request->all() + ['user_id' => $request->user()->id]);
 
         ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
 

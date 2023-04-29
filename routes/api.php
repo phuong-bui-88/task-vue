@@ -18,4 +18,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('tasks', \App\Http\Controllers\Api\TaskController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('tasks', \App\Http\Controllers\Api\TaskController::class);
+    Route::get('user/logout', [\App\Http\Controllers\Api\UserController::class, 'logout']);
+    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class)->except('store');
+});
+
+Route::post('users', [\App\Http\Controllers\Api\UserController::class, 'store']);
+Route::post('user/login', [\App\Http\Controllers\Api\UserController::class, 'login']);
+
+Route::post('user/forgot-password', [\App\Http\Controllers\Api\UserController::class, 'forgotPassword'])->name('forgot.password');
+Route::post('user/reset-password', [\App\Http\Controllers\Api\UserController::class, 'resetPassword'])->name('reset.password');

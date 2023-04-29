@@ -118,15 +118,19 @@ export default {
                 this.isSamePage = false
             }
         },
-        $route(to, from) {
-            if (to.params.taskId) {
-                this.getTask(to.params.taskId)
+        $route: {
+            handler(to, from) {
+                if (to.params.taskId) {
+                    this.getTask(to.params.taskId)
 
-                this.isOpenTaskStatus = true
-            }
-        }
+                    this.isOpenTaskStatus = true
+                }
+            },
+            immediate: true
+        },
     },
     methods:{
+
         closingTask(event) {
             if (this.isClosedTask == true) {
                 return
@@ -145,10 +149,13 @@ export default {
             this.updateTaskVue()
                 .then(function (result) {
                     this.getTasks('', false)
-                 }.bind(this))
+                }.bind(this))
         },
         onDeleteTask() {
             this.destroyTask(this.task.id, true)
+                .then(result => {
+                    this.getTasks('', false)
+                })
             this.onCloseTaskAction()
             this.$router.push({ name : 'task.index' })
         },

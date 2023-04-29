@@ -134,7 +134,7 @@ return [
         'key' => env('MEILISEARCH_KEY', null),
         'index-settings' => [
             \App\Models\Task::class => [
-                'filterableAttributes' => ['id', 'title', 'start_date_timestamp'],
+                'filterableAttributes' => ['id', 'title', 'start_date_timestamp', 'user_id'],
                 'sortableAttributes' => ['start_date_timestamp'],
             ],
         ],

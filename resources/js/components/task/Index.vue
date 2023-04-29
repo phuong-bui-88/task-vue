@@ -103,6 +103,7 @@ export default {
             this.storeTask(this.initCreateTask)
                 .then(result => {
                     this.initCreateTask = {}
+                    this.getTasks('', false)
                 })
         },
         clickedItem(itemId) {
