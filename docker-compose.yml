@@ -22,11 +22,51 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - graylog_network
         depends_on:
             - mysql
             - redis
             - meilisearch
             - selenium
+            - graylog
+    graylog:
+        image: graylog/graylog:4.1
+        restart: always
+        ports:
+          - 9000:9000
+          - 12201:12201/udp
+          - 1514:1514
+        environment:
+          - GRAYLOG_ELASTICSEARCH_SHIELD_ENABLED=false
+          - GRAYLOG_PASSWORD_SECRET=a9e4b789c12d34e5
+          - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+          - GRAYLOG_WEB_ENDPOINT_URI=http://127.0.0.1:9000/api
+        depends_on:
+          - mongo
+          - elasticsearch
+        networks:
+            - graylog_network
+        entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    mongo:
+        image: mongo:4.4
+        restart: always
+        volumes:
+            - mongo_data:/data/db
+        networks:
+            - graylog_network
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+        environment:
+          - "discovery.type=single-node"
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+          memlock:
+            soft: -1
+            hard: -1
+        volumes:
+          - elasticsearch_data:/usr/share/elasticsearch/data
+        networks:
+          - graylog_network
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -87,10 +127,16 @@ services:
 networks:
     sail:
         driver: bridge
+    graylog_network:
+        driver: bridge
 volumes:
     sail-mysql:
         driver: local
     sail-redis:
         driver: local
     sail-meilisearch:
+        driver: local
+    mongo_data:
+        driver: local
+    elasticsearch_data:
         driver: local

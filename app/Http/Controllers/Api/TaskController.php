@@ -10,8 +10,13 @@ use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Spatie\GoogleCalendar\Event;
 use MeiliSearch\Endpoints\Indexes;
+
+use Gelf\Message;
+use Gelf\Publisher;
+use Gelf\Transport\UdpTransport;
 
 class TaskController extends Controller
 {
@@ -77,10 +82,30 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Task::create($request->all() + ['user_id' => $request->user()->id]);
+        //$task = Task::create($request->all() + ['user_id' => $request->user()->id]);
+        //dd(Log::channel('graylog'));
 
-        ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
-
+        //info('mmeee');
+        Log::channel('graylog')->info('Hello, debug Graylog! 2233');
+        //Log::channel('graylog')->info('Hello from Laravel!');
+        //$graylogHost = env('GRAYLOG_HOST');
+        //$graylogPort = env('GRAYLOG_PORT');
+        //
+        //// Create a UDP transport to connect to Graylog
+        //$transport = new UdpTransport($graylogHost, $graylogPort);
+        //
+        //// Create a publisher to send log messages
+        //$publisher = new Publisher($transport);
+        //
+        //// Create a GELF message with your log content
+        //$message = new Message();
+        //$message->setShortMessage('Hello from Laravel!');
+        ////$message->setFacility('laravel');
+        //
+        //// Send the message to Graylog
+        //$publisher->publish($message);
+        ////ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
+        $task = Task::findOrFail(1);
         return new TaskResource($task);
     }
 
