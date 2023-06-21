@@ -28,14 +28,9 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
      */
     public function __construct(?Task $task = null, $method = null, $calendarId = null)
     {
-        info('st');
-        info($task);
         $this->task = $task;
         $this->method = $method;
         $this->calendarId  = (self::DELETE == $this->method) ? $calendarId : null;
-
-        info($this->calendarId);
-        info('end');
     }
 
     /**
@@ -45,7 +40,6 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
      */
     public function handle()
     {
-        info('4444');
         (self::CREATE == $this->method) && $this->processCreate();
         (self::UPDATE == $this->method) && $this->processUpdate();
         (self::DELETE == $this->method) && $this->processDelete();

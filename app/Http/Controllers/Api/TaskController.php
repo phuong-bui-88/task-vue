@@ -82,30 +82,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        //$task = Task::create($request->all() + ['user_id' => $request->user()->id]);
-        //dd(Log::channel('graylog'));
-
-        //info('mmeee');
-        Log::channel('graylog')->info('Hello, debug Graylog! 2233');
-        //Log::channel('graylog')->info('Hello from Laravel!');
-        //$graylogHost = env('GRAYLOG_HOST');
-        //$graylogPort = env('GRAYLOG_PORT');
-        //
-        //// Create a UDP transport to connect to Graylog
-        //$transport = new UdpTransport($graylogHost, $graylogPort);
-        //
-        //// Create a publisher to send log messages
-        //$publisher = new Publisher($transport);
-        //
-        //// Create a GELF message with your log content
-        //$message = new Message();
-        //$message->setShortMessage('Hello from Laravel!');
-        ////$message->setFacility('laravel');
-        //
-        //// Send the message to Graylog
-        //$publisher->publish($message);
-        ////ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
-        $task = Task::findOrFail(1);
+        $task = Task::create($request->all() + ['user_id' => $request->user()->id]);
+        ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
+        info("Created task: {$task->title}", $task->toArray());
         return new TaskResource($task);
     }
 
@@ -131,6 +110,7 @@ class TaskController extends Controller
      */
     public function update(Task $task, StoreTaskRequest $request)
     {
+        info("Updated task: {$task->title}", $task->toArray());
         $task->update($request->all());
         ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
             $task, ProcessCalendarTask::UPDATE
@@ -147,6 +127,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        info("Deleted task: {$task->title}", $task->toArray());
         ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
             null, ProcessCalendarTask::DELETE, $task->calendar_id
         );

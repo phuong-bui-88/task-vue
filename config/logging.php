@@ -56,7 +56,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'graylog'],
             'ignore_exceptions' => false,
         ],
 
@@ -123,27 +123,14 @@ return [
 
         'graylog' => [
             'driver' => 'monolog',
-            'handler' => Monolog\Handler\SyslogUdpHandler::class,
+            'handler' => SyslogUdpHandler::class,
             'level' => 'debug',
-            //'handler' => Monolog\Handler\BrowserConsoleHandler::class,
-            //'formatter' => Monolog\Formatter\HtmlFormatter::class,
             'with' => [
                 'transport' => 'udp',
                 'host' => env('GRAYLOG_HOST', 'graylog'),
                 'port' => env('GRAYLOG_PORT', 12202),
             ],
         ],
-
-        //"info" => [
-        //    'driver' => 'monolog',
-        //    'handler' => Monolog\Handler\FilterHandler::class,
-        //    'with' => [
-        //        'transport' => 'udp',
-        //        'host' => env('GRAYLOG_HOST', 'graylog'),
-        //        'port' => env('GRAYLOG_PORT', 12202),
-        //        'minLevelOrList' => [Monolog\Logger::INFO],
-        //    ],
-        //],
     ],
 
 ];
