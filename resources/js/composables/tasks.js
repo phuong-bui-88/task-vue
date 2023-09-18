@@ -4,7 +4,7 @@ import Base from "./../consts/base.js"
 import api from "./api.js"
 
 
-const tasks = ref(false)
+const tasks = ref([])
 const remainCount = ref(0)
 const allCount = ref(0)
 const overDateCount = ref(0)
