@@ -3,7 +3,7 @@
         <div class="col-12 my-3">
             <ul class="nav nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link position-relative" :class="[(taskStatus == ALL_STATUS) ? 'active' : '']" aria-current="page" href="#" @click.prevent="taskTabActive(ALL_STATUS)">
+                    <a class="nav-link position-relative" :class="[(taskStatus === ALL_STATUS) ? 'active' : '']" aria-current="page" href="#" @click.prevent="taskTabActive(ALL_STATUS)">
                         All
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ allCount }}
@@ -11,7 +11,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link position-relative" :class="[(taskStatus == OVER_DATE_STATUS) ? 'active' : '']" aria-current="page" href="#" @click.prevent="taskTabActive(OVER_DATE_STATUS)">
+                    <a class="nav-link position-relative" :class="[(taskStatus === OVER_DATE_STATUS) ? 'active' : '']" aria-current="page" href="#" @click.prevent="taskTabActive(OVER_DATE_STATUS)">
                         Over Date
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ overDateCount }}
@@ -19,7 +19,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link position-relative" :class="[(taskStatus == REMAIN_STATUS) ? 'active' : '']"  aria-current="page" href="#" @click.prevent="taskTabActive(REMAIN_STATUS)">
+                    <a class="nav-link position-relative" :class="[(taskStatus === REMAIN_STATUS) ? 'active' : '']"  aria-current="page" href="#" @click.prevent="taskTabActive(REMAIN_STATUS)">
                         Remain
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ remainCount }}
@@ -105,11 +105,11 @@ export default {
             this.storeTask(this.initCreateTask)
                 .then(result => {
                     this.initCreateTask = {}
-                    this.getTasks('', false)
+                    this.getTasks()
                 })
         },
         clickedItem(itemId) {
-            this.isSamePage = (itemId == this.route.params.taskId)
+            this.isSamePage = (itemId === this.route.params.taskId)
         },
         formatDate(date) {
             return DateFilter(date, GlobalConst.DATE_FORMAT)

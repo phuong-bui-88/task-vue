@@ -1,5 +1,4 @@
-import { ref } from 'vue'
-import axios from "axios"
+import {ref} from 'vue'
 import Base from "./../consts/base.js"
 import api from "./api.js"
 
@@ -14,14 +13,13 @@ const taskStatus = ref(Base.ALL_STATUS)
 export default function useTasks() {
     const task = ref({})
 
-    const getTasks = async (queryTask = '', hasIndex = true) => {
+    const getTasks = async (queryTask = '') => {
         let status = ''
-        status = (Base.ALL_STATUS == taskStatus.value) ? '?status=0' : status
-        status = (Base.REMAIN_STATUS == taskStatus.value) ? '?status=1' : status
-        status = (Base.OVER_DATE_STATUS == taskStatus.value) ? '?status=2' : status
+        status = (Base.ALL_STATUS === taskStatus.value) ? '?status=0' : status
+        status = (Base.REMAIN_STATUS === taskStatus.value) ? '?status=1' : status
+        status = (Base.OVER_DATE_STATUS === taskStatus.value) ? '?status=2' : status
 
-        hasIndex = (hasIndex) ? '' : '&index=0'
-        queryTask = queryTask + status + hasIndex
+        queryTask = queryTask + status
 
         let result = await api.get('/tasks' + queryTask)
 
@@ -59,8 +57,7 @@ export default function useTasks() {
     }
 
     const destroyTask = async (taskId, includeTasks = false) => {
-        let result = await api.delete('/tasks/' + taskId)
-        return result
+        return await api.delete('/tasks/' + taskId)
     }
 
     return { tasks, task, getTask, getTasks, storeTask, updateTask, destroyTask, isSamePage, allCount, remainCount, overDateCount, taskStatus }

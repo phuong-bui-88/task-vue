@@ -83,6 +83,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $task = Task::create($request->all() + ['user_id' => $request->user()->id]);
+
         ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
         info("Created task: {$task->title}", $task->toArray());
         return new TaskResource($task);

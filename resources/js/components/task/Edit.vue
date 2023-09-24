@@ -148,13 +148,13 @@ export default {
         updateTaskDate(event) {
             this.updateTaskVue()
                 .then(function (result) {
-                    this.getTasks('', false)
+                    this.getTasks()
                 }.bind(this))
         },
         onDeleteTask() {
             this.destroyTask(this.task.id, true)
                 .then(result => {
-                    this.getTasks('', false)
+                    this.getTasks()
                 })
             this.onCloseTaskAction()
             this.$router.push({ name : 'task.index' })

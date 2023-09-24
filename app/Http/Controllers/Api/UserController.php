@@ -29,18 +29,24 @@ class UserController extends Controller
     public function login(UserRequest $request): JsonResponse
     {
         $name = $request->name;
+        $verify = [];
+
         if (filter_var($name, FILTER_VALIDATE_EMAIL)) {
             $user = User::whereEmail($name);
+            $verify['email'] = $name;
         }
         else {
             $user = User::whereName($name);
+            $verify['name'] = $name;
         }
 
         if (!$user) {
             throw new InvalidLoginException();
         }
 
-        if (!auth()->attempt($request->validated())) {
+        $verify['password'] = $request->password;
+
+        if (!auth()->attempt($verify)) {
             throw new InvalidLoginException();
         }
 
