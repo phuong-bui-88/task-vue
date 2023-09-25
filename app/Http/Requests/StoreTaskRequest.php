@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
@@ -24,7 +25,24 @@ class StoreTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required'
+            'title' => 'required',
         ];
+    }
+
+    public function getValidatorInstance()
+    {
+        $this->setDefaultDate();
+        return parent::getValidatorInstance();
+    }
+
+    protected function setDefaultDate()
+    {
+        if (!$this->request->has('start_date')) {
+            $this->merge(['start_date' => now()]);
+        }
+
+        if (!$this->request->has('end_date')) {
+            $this->merge(['end_date' => now()]);
+        }
     }
 }

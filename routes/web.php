@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::post('/upload-image', [\App\Http\Controllers\UploadImageController::class, 'update']);
+Route::delete('/upload-image', [\App\Http\Controllers\UploadImageController::class, 'destroy']);
+
+Route::get('/auth/google', [\App\Http\Controllers\Api\UserController::class, 'redirectToGoogle']);
+
+Route::get('/auth/google/callback', [\App\Http\Controllers\Api\UserController::class, 'handleGoogleCallback']);
+
 
 Route::get('/{any?}', function () {
     return view('welcome');

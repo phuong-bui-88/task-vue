@@ -3,6 +3,9 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use Monolog\Handler\GelfHandler;
+use Monolog\Formatter\GelfMessageFormatter;
+use Gelf\Transport\UdpTransport;
 
 return [
 
@@ -53,7 +56,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'graylog'],
             'ignore_exceptions' => false,
         ],
 
@@ -116,6 +119,17 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'graylog' => [
+            'driver' => 'monolog',
+            'handler' => SyslogUdpHandler::class,
+            'level' => 'debug',
+            'with' => [
+                'transport' => 'udp',
+                'host' => env('GRAYLOG_HOST', 'graylog'),
+                'port' => env('GRAYLOG_PORT', 12202),
+            ],
         ],
     ],
 

@@ -1,5 +1,9 @@
 <template>
     <h1>Create a new post</h1>
+    <div class="message">
+        {{ message }} {{ count }}
+    </div>
+
     <form @submit.prevent="storeTask(task)">
         <div>
             <label for="task-title">Title</label>
@@ -22,11 +26,15 @@
             </button>
         </div>
     </form>
+
+    <SubTask @print-message="showMessage"  @increase-by="showNumber"/>
 </template>
 
 <script>
 import {onMounted, reactive} from "vue";
 import useTasks from "../../composables/tasks.js";
+
+import SubTask from "./SubTask.vue";
 
 export default {
     setup() {
@@ -39,6 +47,24 @@ export default {
         // onMounted(getTasks)
 
         return {task, storeTask, validationErrors, isLoading }
+    },
+    data() {
+        return {
+            message: 'init',
+            count: 0,
+        }
+    },
+    components: {
+        SubTask,
+    },
+    methods: {
+        showMessage(id) {
+            console.log('received')
+            this.message = id
+        },
+        showNumber(number) {
+            this.count = number + this.count
+        }
     }
 }
 </script>
