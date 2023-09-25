@@ -6,11 +6,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InvalidLoginException extends Exception
 {
-    public function __construct()
+    public $message;
+
+    public function __construct($message = '')
     {
+        $this->message = $message ?: 'Invalid username, email, or password';
+        parent::__construct($this->message);
     }
 
     public function render() {
-        return response(['name' => ['Invalid username, email or password']], Response::HTTP_NOT_FOUND);
+        return response(['name' => [$this->message]], Response::HTTP_NOT_FOUND);
     }
 }

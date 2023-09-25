@@ -81,6 +81,7 @@ class UserController extends Controller
     public function forgotPassword(UserRequest $request)
     {
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
             throw new InvalidLoginException();
         }
@@ -98,6 +99,11 @@ class UserController extends Controller
 
     public function resetPassword(UserRequest $request) {
         $tokenRecord = Token::where('token', $request->token)->first();
+
+        if (!$tokenRecord) {
+            throw new InvalidLoginException('Invalid token');
+        }
+
         $data = $request->only('password', 'password_confirmation', 'token');
         $data['email'] = $tokenRecord->key;
 
