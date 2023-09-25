@@ -15,4 +15,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: |
+          docker-compose up -d
+          docker-compose exec app php artisan key:generate
+          docker-compose exec app php artisan migrate --seed
+      working-directory: ./var/www/html
+
+    - name: Run tests
+        run: |
+          docker-compose exec app vendor/bin/phpunit
+        working-directory: ./var/www/html  # Corrected path
+
+      - name: Stop and remove Docker containers
+        run: docker-compose down
+        working-directory: ./var/www/html  # Corrected path
