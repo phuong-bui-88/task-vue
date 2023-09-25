@@ -1,0 +1,52 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
+    - name: Build the Docker image
+      run: |
+          if ! docker network inspect shared_network >/dev/null 2>&1; then
+            docker network create shared_network
+          fi
+          docker-compose up -d
+      working-directory: ./
+
+    - name: Install Composer Dependencies
+      run: |
+          cp .env.example .env
+          docker-compose ps -a
+          docker-compose exec laravel.test netstat -tuln
+          docker-compose exec laravel.test ss -tuln
+          docker-compose exec -T laravel.test composer install
+      working-directory: ./
+
+    - name: Build the laravel
+      run: |
+          docker-compose exec -T laravel.test php artisan key:generate
+          docker-compose exec -T laravel.test php artisan migrate --seed
+      working-directory: ./
+
+    - name: Run tests
+      run: |
+          docker-compose exec laravel.test vendor/bin/phpunit
+      working-directory: ./
+
+    - name: Stop and remove Docker containers
+      run: docker-compose down
+      working-directory: ./
