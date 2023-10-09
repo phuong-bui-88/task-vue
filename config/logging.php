@@ -56,8 +56,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            //'channels' => ['single', 'graylog'],
-            'channels' => ['single'],
+            'channels' => explode(',', env('DEFAULT_CHANNELS', 'single')),
             'ignore_exceptions' => false,
         ],
 
@@ -124,7 +123,7 @@ return [
 
         'graylog' => [
             'driver' => 'monolog',
-            'handler' => SyslogUdpHandler::class,
+            'handler' => \App\Handlers\CustomSyslogUdpHandler::class,
             'level' => 'debug',
             'with' => [
                 'transport' => 'udp',
