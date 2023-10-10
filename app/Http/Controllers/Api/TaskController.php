@@ -26,7 +26,6 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-
         $showData = [
             Task::ALL => false,
             Task::REMAIN => false,
@@ -55,7 +54,6 @@ class TaskController extends Controller
             $query = ($operator)
                 ? Task::where('start_date', $operator, now())
                 : Task::whereNotNull('start_date');
-
             $query->where('user_id', $user->id);
         }
         else {

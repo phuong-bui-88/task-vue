@@ -18,6 +18,10 @@ jobs:
           MYSQL_DATABASE: testing
           MYSQL_USER: sail
           MYSQL_PASSWORD: password
+      meilisearch:
+        image: 'getmeili/meilisearch:latest'
+        ports:
+            - '7700:7700'
 
     steps:
       - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -43,8 +47,19 @@ jobs:
         run: |
           ss -tuln
 
+      - name: Sync Meilisearch index
+        run: php artisan scout:sync-index-settings
+
       - name: install npm
         run:  npm install
+
+      - name: Upload coverage results to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          touch coverage && sudo chown -R www-data:www-data coverage
+          php-coveralls --coverage_clover=/coverage/clover.xml -v
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
