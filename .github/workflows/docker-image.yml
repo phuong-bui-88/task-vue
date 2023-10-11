@@ -53,14 +53,13 @@ jobs:
       - name: install npm
         run:  npm install
 
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        run: vendor/bin/phpunit
+
       - name: Upload coverage results to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           composer global require php-coveralls/php-coveralls
-          touch coverage && sudo chown -R www-data:www-data coverage
-          php-coveralls --coverage_clover=/coverage/clover.xml -v
-
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
-        run: vendor/bin/phpunit
+          php-coveralls --coverage_clover=clover.xml -v
 

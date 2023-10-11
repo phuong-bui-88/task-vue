@@ -20,6 +20,10 @@
             <file >./app/Http/Kernel.php</file>
             <directory suffix=".php">./app/Http/Middleware</directory>
         </exclude>
+
+        <report>
+            <clover outputFile="clover.xml"/>
+        </report>
     </coverage>
 
     <php>
