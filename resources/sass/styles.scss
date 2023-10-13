@@ -5,3 +5,8 @@
     display: flex;
     justify-content: flex-end;
 }
+
+.scroll-y {
+    overflow-y: auto; /* Display a vertical scrollbar when needed */
+    height: 50%;
+}

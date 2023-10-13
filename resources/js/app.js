@@ -33,7 +33,7 @@ app.component('QuillEditor', QuillEditor)
 app.component('FilePond', FilePond)
 app.component('VCalendar', Calendar)
 app.component('DatePicker', DatePicker)
-app.component('draggable', draggable)
+// app.component('draggable', draggable)
 app.use(Toast, options)
 
 app.mount("#app");

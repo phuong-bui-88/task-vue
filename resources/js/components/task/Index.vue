@@ -29,17 +29,19 @@
             </ul>
         </div>
     </div>
-     <draggable v-model="tasks" @start="dragging = true" @end="dragging = false" item-key="id" @change="dragTask">
-          <template #item="{ element }">
+
+    <div class="index-wrapper scroll-y">
+        <div v-for="(element, index) in tasks">
             <router-link :to="{name: 'task.edit', params: { taskId: element.id }}" @click="clickedItem(element.id)">
-                <div data-bs-toggle="offcanvas" href="#edit-task" :class="'row task-' + element.id"  :item-id='element.id'>
-                    <div class="col-2">{{ element.id }}</div>
-                    <div class="col-md-8 col-sm-6">{{ element.title }}</div>
-                    <div class="col-md-2 col-sm-4">{{ formatDate(element.start_date) }}</div>
+                <div data-bs-toggle="offcanvas" href="#edit-task" :class="'row m-0 task-' + element.id"
+                     :item-id='element.id'>
+                    <div class="col-2 p-0">{{ element.id }}</div>
+                    <div class="col-md-8 col-sm-6 p-0">{{ element.title }}</div>
+                    <div class="col-md-2 col-sm-4 p-0">{{ formatDate(element.start_date) }}</div>
                 </div>
             </router-link>
-         </template>
-    </draggable>
+        </div>
+    </div>
 
 <!--    // init task edit is empty in /tasks-->
     <div v-if="isTasksRoute" class="d-none">
@@ -117,10 +119,6 @@ export default {
         taskTabActive(status) {
             this.taskStatus = status
             this.getTasks()
-        },
-        dragTask(evt) {
-            console.log(evt);
-            // console.log('move item', item)
         }
     }
 }
