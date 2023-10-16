@@ -20,9 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tasks', \App\Http\Controllers\Api\TaskController::class);
-    Route::get('user/logout', [\App\Http\Controllers\Api\UserController::class, 'logout']);
     Route::apiResource('users', \App\Http\Controllers\Api\UserController::class)->except('store');
+
+    Route::post('/favorite/{task}', [\App\Http\Controllers\Api\FavoriteController::class, 'store']);
+    Route::delete('/favorite/{task}', [\App\Http\Controllers\Api\FavoriteController::class, 'destroy']);
 });
+
+Route::get('user/logout', [\App\Http\Controllers\Api\UserController::class, 'logout']);
 
 Route::post('users', [\App\Http\Controllers\Api\UserController::class, 'store']);
 Route::post('user/login', [\App\Http\Controllers\Api\UserController::class, 'login']);

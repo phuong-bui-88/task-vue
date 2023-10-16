@@ -5,6 +5,7 @@ import { QuillEditor } from "@vueup/vue-quill"
 import { setupQuill } from "./composables/vue_quill.js"
 import { setupFilePond } from "./composables/file_pond.js"
 import draggable from 'vuedraggable'
+import FontAwesomeIcon from "./composables/font_awesome.js";
 
 import 'v-calendar/dist/style.css'
 import { Calendar, DatePicker } from 'v-calendar'
@@ -34,6 +35,8 @@ app.component('FilePond', FilePond)
 app.component('VCalendar', Calendar)
 app.component('DatePicker', DatePicker)
 // app.component('draggable', draggable)
+.component('font-awesome-icon', FontAwesomeIcon)
+
 app.use(Toast, options)
 
 app.mount("#app");

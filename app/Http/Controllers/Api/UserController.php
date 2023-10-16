@@ -8,6 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Token;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Password;
@@ -121,14 +122,16 @@ class UserController extends Controller
         return ($status === Password::PASSWORD_RESET);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->tokens()->delete();
+        if (is_null(Auth::user())) {
+            Auth::logout();
+                return response()->json([
+                'success'   => 'Logged out successfully',
+            ]);
+        }
 
-        // Revoke the user's access token
-        // Http::post('https://accounts.google.com/o/oauth2/revoke', [
-        //    'token' => auth()->user()->token,
-        // ]);
+        \Auth::user()->tokens()->delete();
 
         return response()->json([
             'success'   => 'Logged out successfully',

@@ -22,7 +22,8 @@ class TaskResource extends JsonResource
             'description' => $this->whenNotNull($this->description),
             'created_at' => $this->whenNotNull($this->created_at),
             'start_date' => $this->whenNotNull($this->start_date),
-            'documents' => $this->when($request->routeIs('tasks.show'), $this->documents)
+            'documents' => $this->when($request->routeIs('tasks.show'), $this->documents),
+            'is_favorite' => $this->isFavorite() ?? false,
         ];
     }
 }

@@ -70,4 +70,10 @@ class User extends Authenticatable implements CanResetPassword
             'socialite_refresh_token' => $googleAuth->refreshToken,
         ]);
     }
+
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Task::class, 'favorites')->withTimestamps();
+    }
 }

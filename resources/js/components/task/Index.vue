@@ -26,6 +26,14 @@
                 </span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link position-relative" :class="[(taskStatus === FAVORITE_STATUS) ? 'active' : '']"  aria-current="page" href="#" @click.prevent="taskTabActive(FAVORITE_STATUS)">
+                        Favorite
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ favoriteCount }}
+                </span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -36,8 +44,9 @@
                 <div data-bs-toggle="offcanvas" href="#edit-task" :class="'row m-0 task-' + element.id"
                      :item-id='element.id'>
                     <div class="col-2 p-0">{{ element.id }}</div>
-                    <div class="col-md-8 col-sm-6 p-0">{{ element.title }}</div>
+                    <div class="col-md-6 col-sm-4 p-0">{{ element.title }}</div>
                     <div class="col-md-2 col-sm-4 p-0">{{ formatDate(element.start_date) }}</div>
+                    <div class="col-md-2 col-sm-2 p-0"><FavoriteItem :key="element.id" :item="element" @toggle-favorite="toggleFavorite"/></div>
                 </div>
             </router-link>
         </div>
@@ -61,12 +70,15 @@
 import useTasks from "../../composables/tasks.js"
 import { useRoute } from "vue-router";
 import TaskEdit from "./Edit.vue"
+import FavoriteItem from "../integrate/FavoriteItem.vue";
 import {onMounted, reactive, ref} from "vue"
 import DateFilter from "../../filters/date.js"
 import GlobalConst from "../../consts/base.js"
+
 import lo from 'lodash'
 
 export default {
+    components: {FavoriteItem},
     props: {
         editInit: Boolean,
         taskId: String,
@@ -78,7 +90,7 @@ export default {
             description: ''
         }
 
-        const {tasks, allCount, remainCount, overDateCount, taskStatus, getTasks, storeTask, isSamePage } = useTasks()
+        const {tasks, allCount, remainCount, overDateCount, favoriteCount, taskStatus, getTasks, storeTask, isSamePage, addFavoriteTask, destroyFavoriteTask } = useTasks()
         const isTasksRoute = ref(false)
 
         const route = useRoute()
@@ -86,12 +98,13 @@ export default {
             isTasksRoute.value = true
         }
 
-        return {route, tasks, allCount, remainCount, overDateCount, taskStatus, initCreateTask, getTasks, storeTask, isTasksRoute, isSamePage}
+        return {route, tasks, allCount, remainCount, overDateCount, favoriteCount, taskStatus, initCreateTask, getTasks, storeTask, isTasksRoute, isSamePage, addFavoriteTask, destroyFavoriteTask}
     },
     created() {
         this.ALL_STATUS = GlobalConst.ALL_STATUS
         this.REMAIN_STATUS = GlobalConst.REMAIN_STATUS
         this.OVER_DATE_STATUS = GlobalConst.OVER_DATE_STATUS
+        this.FAVORITE_STATUS = GlobalConst.FAVORITE_STATUS
     },
     watch: {
         $route (to, from) {
@@ -118,6 +131,12 @@ export default {
         },
         taskTabActive(status) {
             this.taskStatus = status
+            this.getTasks()
+        },
+        toggleFavorite(item, isFavorite) {
+            (isFavorite)
+                ? this.addFavoriteTask(item)
+                : this.destroyFavoriteTask(item)
             this.getTasks()
         }
     }

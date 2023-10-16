@@ -7,6 +7,7 @@ use App\Http\Resources\TaskResource;
 use App\Jobs\ProcessCalendarTask;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Queue;
 use Tests\TestCase;
@@ -21,7 +22,11 @@ class TaskControllerTest extends TestCase
         $user = User::factory()->create(['id' => rand(250, 260)]);
         // Create some tasks associated with the user
 
-        Task::factory(3)->create(['user_id' => $user->id]);
+        $overDateTasks = Task::factory(3)->create(['user_id' => $user->id]);
+        $remainTasks = Task::factory(3)->create(['user_id' => $user->id, 'start_date' => Carbon::now()->addDay()]);
+
+        $user->favorites()->attach($overDateTasks->first());
+        $user->favorites()->attach($remainTasks->first());
 
         sleep(1);
         // Make a request to the 'index' method
@@ -38,9 +43,12 @@ class TaskControllerTest extends TestCase
         ]);
 
         $content = json_decode($response->content(), true);
-        $this->assertEquals(3, count($content['data']));
-        $this->assertEquals(3, $content['allCount']);
+
+        $this->assertEquals(6, count($content['data']));
+        $this->assertEquals(6, $content['allCount']);
         $this->assertEquals(3, $content['overDateCount']);
+        $this->assertEquals(3, $content['remainCount']);
+        $this->assertEquals(2, $content['favoriteCount']);
 
         $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::OVER_DATE);
 
@@ -56,8 +64,28 @@ class TaskControllerTest extends TestCase
 
         $content = json_decode($response->content(), true);
         $this->assertEquals(3, count($content['data']));
-        $this->assertEquals(3, $content['allCount']);
+        $this->assertEquals(6, $content['allCount']);
         $this->assertEquals(3, $content['overDateCount']);
+        $this->assertEquals(3, $content['remainCount']);
+        $this->assertEquals(2, $content['favoriteCount']);
+
+        //test remain
+        $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::REMAIN);
+        $content = json_decode($response->content(), true);
+        $this->assertEquals(3, count($content['data']));
+        $this->assertEquals(6, $content['allCount']);
+        $this->assertEquals(3, $content['overDateCount']);
+        $this->assertEquals(3, $content['remainCount']);
+        $this->assertEquals(2, $content['favoriteCount']);
+
+        //test favorite
+        $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::FAVORITE);
+        $content = json_decode($response->content(), true);
+        $this->assertEquals(2, count($content['data']));
+        $this->assertEquals(6, $content['allCount']);
+        $this->assertEquals(3, $content['overDateCount']);
+        $this->assertEquals(3, $content['remainCount']);
+        $this->assertEquals(2, $content['favoriteCount']);
     }
 
     public function testStoreTask()

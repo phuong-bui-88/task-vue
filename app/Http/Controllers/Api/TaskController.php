@@ -29,7 +29,8 @@ class TaskController extends Controller
         $showData = [
             Task::ALL => false,
             Task::REMAIN => false,
-            Task::OVER_DATE => false
+            Task::OVER_DATE => false,
+            Task::FAVORITE => false,
         ];
 
         if ($request->has('status')) {
@@ -43,12 +44,13 @@ class TaskController extends Controller
         $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $hasIndex, $user);
         $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $hasIndex, $user);
         $overDateCount = $this->searchTasks($tasks, '<=', $showData[Task::OVER_DATE], $hasIndex, $user);
+        $favoriteCount = $this->searchTasks($tasks, null, $showData[Task::FAVORITE], $hasIndex, $user, true);
 
         return TaskResource::collection($tasks)
-            ->additional(compact('remainCount', 'allCount', 'overDateCount'));
+            ->additional(compact('remainCount', 'allCount', 'overDateCount', 'favoriteCount'));
     }
 
-    public function searchTasks(&$tasks, $operator, $data, $hasIndex, $user)
+    public function searchTasks(&$tasks, $operator, $data, $hasIndex, $user, $isFavorite = false)
     {
         if (!$hasIndex) {
             $query = ($operator)
@@ -57,9 +59,16 @@ class TaskController extends Controller
             $query->where('user_id', $user->id);
         }
         else {
-            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($operator, $user) {
+            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($isFavorite, $operator, $user) {
                 ($operator)
                 && $options['filter'][] = sprintf('start_date_timestamp %s %s ', $operator, now()->timestamp);
+
+                if ($isFavorite) {
+                    $favoriteTaskIds = auth()->user()->favorites->pluck('id')->all();
+                    ($favoriteTaskIds)
+                        ? $options['filter'][] = sprintf('id = %s', implode(' OR id = ', $favoriteTaskIds))
+                        : $options['filter'][] = sprintf('id IS NULL');
+                }
 
                 $options['filter'][] = sprintf('user_id %s %s', '=', $user->id);
 
