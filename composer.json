@@ -63,14 +63,21 @@
             "dont-discover": []
         },
         "hooks": {
-            "pre-commit": [
-                "echo committing as $(git config user.name)",
-                "php-cs-fixer fix ."
-            ],
-            // verify commit message. ex: ABC-123: Fix everything
-            "commit-msg": "grep -q '[A-Z]+-[0-9]+.*' $1",
+//            "pre-commit": [
+//                "echo committing as $(git config user.name)",
+//                "php-cs-fixer fix ."
+//            ],
+//            // verify commit message. ex: ABC-123: Fix everything
+//            "commit-msg": "grep -q '[A-Z]+-[0-9]+.*' $1",
+//            "pre-push": [
+//                "php-cs-fixer fix --dry-run .", // check style
+//                "phpunit"
+//            ],
+            "config": {
+                "stop-on-failure": ["pre-push"]
+            },
             "pre-push": [
-                "php-cs-fixer fix --dry-run .", // check style
+                "php-cs-fixer fix --dry-run --stop-on-violation .",
                 "phpunit"
             ],
         },
