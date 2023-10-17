@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#npm run check-format
-#PRETTIER_EXIT_CODE=$?
-#
-#if [ $PRETTIER_EXIT_CODE -ne 0 ]
-#then
-#    npm run format
-#fi
+./vendor/bin/sail npm run check-format
+PRETTIER_EXIT_CODE=$?
+
+if [ $PRETTIER_EXIT_CODE -ne 0 ]
+then
+    ./vendor/bin/sail npm run format
+fi
 
 
 ./vendor/bin/sail composer check-format
