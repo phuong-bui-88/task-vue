@@ -1,10 +1,10 @@
-const DATE_FORMAT = 'DD-MM-YYYY'
-const DATE_FORMAT_DB = 'yyyy-MM-DD HH:mm:ss'
-const ALL_STATUS = 0
-const REMAIN_STATUS = 1
-const OVER_DATE_STATUS = 2
-const FAVORITE_STATUS = 3
-const TOKEN = 'token'
+const DATE_FORMAT = "DD-MM-YYYY";
+const DATE_FORMAT_DB = "yyyy-MM-DD HH:mm:ss";
+const ALL_STATUS = 0;
+const REMAIN_STATUS = 1;
+const OVER_DATE_STATUS = 2;
+const FAVORITE_STATUS = 3;
+const TOKEN = "token";
 
 export default {
     DATE_FORMAT: DATE_FORMAT,
@@ -15,5 +15,5 @@ export default {
     REMAIN_STATUS: REMAIN_STATUS,
     FAVORITE_STATUS: FAVORITE_STATUS,
 
-    TOKEN: TOKEN,
-}
+    TOKEN: TOKEN
+};

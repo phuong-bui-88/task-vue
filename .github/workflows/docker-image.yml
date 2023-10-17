@@ -12,21 +12,21 @@ jobs:
       mysql:
         image: mysql/mysql-server:8.0
         ports:
-          - '3306:3306'
+          - "3306:3306"
         env:
           MYSQL_ROOT_PASSWORD: root_password
           MYSQL_DATABASE: testing
           MYSQL_USER: sail
           MYSQL_PASSWORD: password
       meilisearch:
-        image: 'getmeili/meilisearch:latest'
+        image: "getmeili/meilisearch:latest"
         ports:
-            - '7700:7700'
+          - "7700:7700"
 
     steps:
       - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
         with:
-          php-version: '8.1'
+          php-version: "8.1"
       - uses: actions/checkout@v2
 
       - name: Install curl
@@ -51,7 +51,7 @@ jobs:
         run: php artisan scout:sync-index-settings
 
       - name: install npm
-        run:  npm install
+        run: npm install
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
@@ -62,4 +62,3 @@ jobs:
         run: |
           composer global require php-coveralls/php-coveralls
           php-coveralls --coverage_clover=clover.xml -v
-

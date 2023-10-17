@@ -148,6 +148,6 @@ class UserController extends Controller
         $user = User::findOrCreateGoogleAuth($googleUser);
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return redirect('/login?token='.$token);
+        return redirect('/login?token=' . $token);
     }
 }

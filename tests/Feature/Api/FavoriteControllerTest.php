@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Controllers\Api;
 
-use App\Models\User;
-use App\Models\Task;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
 use Tests\TestCase;
@@ -12,7 +12,6 @@ use Tests\TestCase;
 class FavoriteControllerTest extends TestCase
 {
     use RefreshDatabase; // Reset the database after each test
-
 
     public function testStoreMethodFavoritingTask()
     {

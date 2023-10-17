@@ -31,6 +31,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUser();
         $task = Task::factory()->create(['user_id' => $user->id]);
+
         return [$user, $task];
     }
 }

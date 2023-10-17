@@ -9,16 +9,16 @@
 #fi
 
 
-composer check-format
+./vendor/bin/sail composer check-format
 CS_FIXER_EXIT_CODE=$?
 
 if [ $CS_FIXER_EXIT_CODE -ne 0 ]
 then
-    composer format
+    ./vendor/bin/sail composer format
 fi
 
 
-composer analyse
+./vendor/bin/sail composer analyse
 PHP_STAN_EXIT_CODE=$?
 
 

@@ -16,11 +16,11 @@ class TaskFactory extends Factory
      */
     public function definition()
     {
-         return [
-            'title' => fake()->name(),
-            'description' => fake()->paragraphs(2, true),
-            'start_date' => now(),
-            'end_date' => now(),
+        return [
+           'title' => fake()->name(),
+           'description' => fake()->paragraphs(2, true),
+           'start_date' => now(),
+           'end_date' => now(),
         ];
     }
 }

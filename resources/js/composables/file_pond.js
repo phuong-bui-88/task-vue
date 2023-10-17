@@ -1,5 +1,5 @@
 // Import Vue FilePond
-import vueFilePond from 'vue-filepond';
+import vueFilePond from "vue-filepond";
 
 // Import FilePond styles
 import "filepond/dist/filepond.min.css";
@@ -12,7 +12,7 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
 export const uploadFilePond = (file, progress, field) => {
     const formData = new FormData();
-    formData.append('image', file, file.name);
+    formData.append("image", file, file.name);
     formData.append(field.name, field.id);
 
     // related to aborting the request
@@ -20,31 +20,31 @@ export const uploadFilePond = (file, progress, field) => {
     const source = CancelToken.source();
 
     // the request itself
-    return  axios({
-        method: 'post',
-        url: '/upload-image',
+    return axios({
+        method: "post",
+        url: "/upload-image",
         data: formData,
         cancelToken: source.token,
         onUploadProgress: (e) => {
             // updating progress indicator
             progress(e.lengthComputable, e.loaded, e.total);
         }
-    }).then(response => {
-        return response.data
-    })
-}
+    }).then((response) => {
+        return response.data;
+    });
+};
 
 export const removeFilePond = (fileUrl) => {
     let data = {
-        fileUrl: fileUrl,
-    }
+        fileUrl: fileUrl
+    };
 
-    return axios.delete('/upload-image', { data: data })
-}
+    return axios.delete("/upload-image", { data: data });
+};
 
 export const setupFilePond = () => {
     return vueFilePond(
-          FilePondPluginFileValidateType,
-          FilePondPluginImagePreview
-    )
-}
+        FilePondPluginFileValidateType,
+        FilePondPluginImagePreview
+    );
+};

@@ -1,13 +1,14 @@
 <?php
 
 namespace Tests\Feature\Api;
+
+use App\Exceptions\InvalidLoginException;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
 use Tests\TestCase;
-use App\Exceptions\InvalidLoginException;
 
 class UserControllerTest extends TestCase
 {
@@ -67,7 +68,7 @@ class UserControllerTest extends TestCase
         // Assert that the response contains user data
         $response->assertJsonStructure([
             'data' => [
-                'id', 'name', 'created_at'
+                'id', 'name', 'created_at',
             ],
         ]);
     }
@@ -90,7 +91,6 @@ class UserControllerTest extends TestCase
 
     public function testForgotPasswordWithInvalidEmail()
     {
-
         // Send a POST request to the forgotPassword route with an invalid email
         $response = $this->json('POST', 'api/user/forgot-password', [
             'email' => 'nonexistent@example.com',

@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
@@ -63,7 +66,7 @@
             "@php artisan key:generate --ansi"
         ],
         "check-format": "php-cs-fixer fix --dry-run --config=.php-cs-fixer.dist.php",
-        "format": "php-cs-fixer fix --config=.php-cs-fixer.dist.php fix",
+        "format": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "analyse": "phpstan analyse"
     },
     "extra": {
