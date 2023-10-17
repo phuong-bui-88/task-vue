@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,7 +11,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Spatie\GoogleCalendar\Event;
-use Carbon\Carbon;
 
 class ProcessCalendarTask implements ShouldQueue, JobConst
 {
@@ -30,7 +30,7 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
     {
         $this->task = $task;
         $this->method = $method;
-        $this->calendarId  = (self::DELETE == $this->method) ? $calendarId : null;
+        $this->calendarId = (self::DELETE == $this->method) ? $calendarId : null;
     }
 
     /**
@@ -53,13 +53,15 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
            'endDate' => Carbon::now(),
         ]);
 
-         $this->task->calendar_id = $event->id;
-         $this->task->save();
+        $this->task->calendar_id = $event->id;
+        $this->task->save();
     }
 
     protected function processUpdate()
     {
-        if (!$this->task->calendar_id) return;
+        if (!$this->task->calendar_id) {
+            return;
+        }
 
         $event = Event::find($this->task->calendar_id);
         $event->name = $this->task->title;
@@ -72,8 +74,12 @@ class ProcessCalendarTask implements ShouldQueue, JobConst
     {
         $e = Event::find($this->calendarId);
 
-        if (!$event = Event::find($this->calendarId)) return;
-        if (self::STATUS_CANCELLED == $event->googleEvent->getStatus()) return;
+        if (!$event = Event::find($this->calendarId)) {
+            return;
+        }
+        if (self::STATUS_CANCELLED == $event->googleEvent->getStatus()) {
+            return;
+        }
         $event->delete();
     }
 }

@@ -25,13 +25,14 @@ class UploadImageController extends Controller
         $file = $request->file('image');
         $fileName = $file->getClientOriginalName();
         $file->storeAs('', $fileName, ['disk' => 'public']);
+
         return Storage::url($fileName);
     }
 
     public function destroy(Request $request)
     {
         $path = pathinfo($request->fileUrl);
-        $pathElements =  explode('/', $path['dirname']);
+        $pathElements = explode('/', $path['dirname']);
         $id = end($pathElements);
         if (!is_numeric($id)) {
             return 'false';

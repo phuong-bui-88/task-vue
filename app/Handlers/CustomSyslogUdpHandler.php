@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Handlers;
+
 use Monolog\Handler\SyslogUdpHandler;
 
 class CustomSyslogUdpHandler extends SyslogUdpHandler

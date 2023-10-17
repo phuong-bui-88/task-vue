@@ -2,10 +2,9 @@
 
 namespace App\Providers;
 
-use Laravel\Scout\Builder;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
-
+use Illuminate\Support\ServiceProvider;
+use Laravel\Scout\Builder;
 
 class ScoutMacroServiceProvider extends ServiceProvider
 {

@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+
 //use Illuminate\Auth\Passwords\CanResetPassword;
 
 class User extends Authenticatable implements CanResetPassword
@@ -27,7 +28,7 @@ class User extends Authenticatable implements CanResetPassword
         'password',
         'socialite_id',
         'socialite_token',
-        'socialite_refresh_token'
+        'socialite_refresh_token',
     ];
 
     /**
@@ -49,13 +50,13 @@ class User extends Authenticatable implements CanResetPassword
         'email_verified_at' => 'datetime',
     ];
 
-
     public function sendPasswordResetPassword($token)
     {
         \Mail::to($this->email)->queue(new ResetPasswordEmail($token));
     }
 
-    public static function findOrCreateGoogleAuth($googleAuth) {
+    public static function findOrCreateGoogleAuth($googleAuth)
+    {
         $user = self::where('email', $googleAuth->email)->first();
 
         if ($user) {
@@ -71,7 +72,6 @@ class User extends Authenticatable implements CanResetPassword
             'socialite_refresh_token' => $googleAuth->refreshToken,
         ]);
     }
-
 
     public function favorites(): BelongsToMany
     {

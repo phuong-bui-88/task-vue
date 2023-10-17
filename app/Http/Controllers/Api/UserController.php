@@ -10,18 +10,15 @@ use App\Models\Token;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Password;
-
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Http\Request;
-
 
 class UserController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -35,8 +32,7 @@ class UserController extends Controller
         if (filter_var($name, FILTER_VALIDATE_EMAIL)) {
             $user = User::whereEmail($name);
             $verify['email'] = $name;
-        }
-        else {
+        } else {
             $user = User::whereName($name);
             $verify['name'] = $name;
         }
@@ -59,7 +55,7 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * Signup
+     * Signup.
      * @param UserRequest $request
      * @return JsonResponse
      */
@@ -95,10 +91,12 @@ class UserController extends Controller
         );
 
         $user->sendPasswordResetPassword($token);
+
         return 'ok';
     }
 
-    public function resetPassword(UserRequest $request) {
+    public function resetPassword(UserRequest $request)
+    {
         $tokenRecord = Token::where('token', $request->token)->first();
 
         if (!$tokenRecord) {
@@ -112,22 +110,23 @@ class UserController extends Controller
             $data,
             function (User $user, string $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->setRememberToken(Str::random(60));
 
                 $user->save();
             }
         );
 
-        return ($status === Password::PASSWORD_RESET);
+        return $status === Password::PASSWORD_RESET;
     }
 
     public function logout()
     {
         if (is_null(Auth::user())) {
             Auth::logout();
-                return response()->json([
-                'success'   => 'Logged out successfully',
+
+            return response()->json([
+            'success'   => 'Logged out successfully',
             ]);
         }
 
@@ -138,7 +137,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function redirectToGoogle() {
+    public function redirectToGoogle()
+    {
         return Socialite::driver('google')->redirect();
     }
 
@@ -148,6 +148,6 @@ class UserController extends Controller
         $user = User::findOrCreateGoogleAuth($googleUser);
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return redirect('/login?token=' . $token);
+        return redirect('/login?token='.$token);
     }
 }

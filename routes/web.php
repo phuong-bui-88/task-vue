@@ -21,8 +21,6 @@ Route::get('/auth/google', [\App\Http\Controllers\Api\UserController::class, 're
 
 Route::get('/auth/google/callback', [\App\Http\Controllers\Api\UserController::class, 'handleGoogleCallback']);
 
-
 Route::get('/{any?}', function () {
     return view('welcome');
 })->where('any', '.*');
-

@@ -2,7 +2,8 @@
 
 namespace App\Jobs;
 
-interface JobConst {
+interface JobConst
+{
     const CREATE = 'create';
     const UPDATE = 'update';
     const DELETE = 'delete';

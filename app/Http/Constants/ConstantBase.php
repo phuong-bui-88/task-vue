@@ -2,6 +2,7 @@
 
 namespace App\Http\Constants;
 
-interface ConstantBase {
+interface ConstantBase
+{
     const DATE_FORMAT = 'd-m-Y';
 }

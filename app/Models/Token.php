@@ -13,5 +13,4 @@ class Token extends Model
         'key',
         'token',
     ];
-
 }

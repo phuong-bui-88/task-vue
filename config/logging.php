@@ -1,11 +1,11 @@
 <?php
 
+use Gelf\Transport\UdpTransport;
+use Monolog\Formatter\GelfMessageFormatter;
+use Monolog\Handler\GelfHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
-use Monolog\Handler\GelfHandler;
-use Monolog\Formatter\GelfMessageFormatter;
-use Gelf\Transport\UdpTransport;
 
 return [
 

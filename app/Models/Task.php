@@ -29,7 +29,7 @@ class Task extends Model implements HasMedia
         $documentOutput = [];
 
         foreach ($documents as $document) {
-            $documentOutput []= $document->getFullUrl();
+            $documentOutput[] = $document->getFullUrl();
         }
 
         return $documentOutput;
@@ -58,7 +58,7 @@ class Task extends Model implements HasMedia
             'description' => $this->description,
             'start_date' => $this->start_date,
             'start_date_timestamp' => Carbon::parse($this->start_date)->timestamp,
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ];
     }
 }

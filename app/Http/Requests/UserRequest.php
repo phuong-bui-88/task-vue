@@ -53,7 +53,8 @@ class UserRequest extends FormRequest
     /**
      * @throws \HttpResponseException
      */
-    public function failedValidation(Validator|\Illuminate\Contracts\Validation\Validator $validator) {
+    public function failedValidation(Validator|\Illuminate\Contracts\Validation\Validator $validator)
+    {
         throw new HttpResponseException(response()->json(array_merge([
             'success' => false,
             'message' => 'Validation errors',

@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-
     /**
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
@@ -48,8 +47,7 @@ class TaskController extends Controller
                 ? Task::where('start_date', $operator, now())
                 : Task::whereNotNull('start_date');
             $query->where('user_id', $user->id);
-        }
-        else {
+        } else {
             $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($isFavorite, $operator, $user) {
                 ($operator)
                 && $options['filter'][] = sprintf('start_date_timestamp %s %s ', $operator, now()->timestamp);
@@ -84,6 +82,7 @@ class TaskController extends Controller
 
         ProcessCalendarTask::dispatch($task, ProcessCalendarTask::CREATE);
         info("Created task: {$task->title}", $task->toArray());
+
         return new TaskResource($task);
     }
 
@@ -97,7 +96,7 @@ class TaskController extends Controller
     {
         $task = Task::find($id);
 
-        return (new TaskResource($task));
+        return new TaskResource($task);
     }
 
     /**
@@ -112,8 +111,10 @@ class TaskController extends Controller
     {
         info("Updated task: {$task->title}", $task->toArray());
         $task->update($request->all());
-        ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
-            $task, ProcessCalendarTask::UPDATE
+        ProcessCalendarTask::dispatchIf(
+            isset($task->calendar_id),
+            $task,
+            ProcessCalendarTask::UPDATE
         );
 
         return 'ok';
@@ -128,12 +129,15 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         info("Deleted task: {$task->title}", $task->toArray());
-        ProcessCalendarTask::dispatchIf(isset($task->calendar_id),
-            null, ProcessCalendarTask::DELETE, $task->calendar_id
+        ProcessCalendarTask::dispatchIf(
+            isset($task->calendar_id),
+            null,
+            ProcessCalendarTask::DELETE,
+            $task->calendar_id
         );
 
         $task->delete();
+
         return 'ok';
     }
-
 }

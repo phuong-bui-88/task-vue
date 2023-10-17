@@ -32,6 +32,7 @@ class StoreTaskRequest extends FormRequest
     public function getValidatorInstance()
     {
         $this->setDefaultDate();
+
         return parent::getValidatorInstance();
     }
 
