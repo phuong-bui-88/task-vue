@@ -20,13 +20,10 @@ class TaskControllerTest extends TestCase
     {
         // Create a user
         $user = User::factory()->create(['id' => rand(250, 260)]);
-        // Create some tasks associated with the user
 
+        // Create some tasks associated with the user
         $overDateTasks = Task::factory(3)->create(['user_id' => $user->id]);
         $remainTasks = Task::factory(3)->create(['user_id' => $user->id, 'start_date' => Carbon::now()->addDay()]);
-
-        $user->favorites()->attach($overDateTasks->first());
-        $user->favorites()->attach($remainTasks->first());
 
         sleep(1);
         // Make a request to the 'index' method
@@ -48,7 +45,7 @@ class TaskControllerTest extends TestCase
         $this->assertEquals(6, $content['allCount']);
         $this->assertEquals(3, $content['overDateCount']);
         $this->assertEquals(3, $content['remainCount']);
-        $this->assertEquals(2, $content['favoriteCount']);
+        $this->assertEquals(0, $content['favoriteCount']);
 
         $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::OVER_DATE);
 
@@ -67,7 +64,7 @@ class TaskControllerTest extends TestCase
         $this->assertEquals(6, $content['allCount']);
         $this->assertEquals(3, $content['overDateCount']);
         $this->assertEquals(3, $content['remainCount']);
-        $this->assertEquals(2, $content['favoriteCount']);
+        $this->assertEquals(0, $content['favoriteCount']);
 
         //test remain
         $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::REMAIN);
@@ -76,9 +73,14 @@ class TaskControllerTest extends TestCase
         $this->assertEquals(6, $content['allCount']);
         $this->assertEquals(3, $content['overDateCount']);
         $this->assertEquals(3, $content['remainCount']);
-        $this->assertEquals(2, $content['favoriteCount']);
+        $this->assertEquals(0, $content['favoriteCount']);
 
         //test favorite
+        $user->favorites()->attach($overDateTasks->first()->id);
+        $user->favorites()->attach($remainTasks->first()->id);
+        $user->load('favorites');
+        sleep(1);
+
         $response = $this->actingAs($user)->get('/api/tasks?status=' . Task::FAVORITE);
         $content = json_decode($response->content(), true);
         $this->assertEquals(2, count($content['data']));

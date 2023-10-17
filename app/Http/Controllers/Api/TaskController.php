@@ -27,43 +27,36 @@ class TaskController extends Controller
             $showData[$request->status] = true;
         }
 
-        $hasIndex = $request->has('index') ? $request->index : true;
         $user = $request->user();
 
         $tasks = [];
-        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $hasIndex, $user);
-        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $hasIndex, $user);
-        $overDateCount = $this->searchTasks($tasks, '<=', $showData[Task::OVER_DATE], $hasIndex, $user);
-        $favoriteCount = $this->searchTasks($tasks, null, $showData[Task::FAVORITE], $hasIndex, $user, true);
+        $remainCount = $this->searchTasks($tasks, '>', $showData[Task::REMAIN], $user);
+        $allCount = $this->searchTasks($tasks, null, $showData[Task::ALL], $user);
+        $overDateCount = $this->searchTasks($tasks, '<=', $showData[Task::OVER_DATE], $user);
+        $favoriteCount = $this->searchTasks($tasks, null, $showData[Task::FAVORITE], $user, true);
 
         return TaskResource::collection($tasks)
             ->additional(compact('remainCount', 'allCount', 'overDateCount', 'favoriteCount'));
     }
 
-    public function searchTasks(&$tasks, $operator, $data, $hasIndex, $user, $isFavorite = false)
+    public function searchTasks(&$tasks, $operator, $data, $user, $isFavorite = false)
     {
-        if (!$hasIndex) {
-            $query = ($operator)
-                ? Task::where('start_date', $operator, now())
-                : Task::whereNotNull('start_date');
-            $query->where('user_id', $user->id);
-        } else {
-            $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($isFavorite, $operator, $user) {
-                ($operator)
-                && $options['filter'][] = sprintf('start_date_timestamp %s %s ', $operator, now()->timestamp);
+        $query = Task::search('', function ($meiliSearch, string $query, array $options) use ($isFavorite, $operator, $user) {
+            ($operator)
+            && $options['filter'][] = sprintf('start_date_timestamp %s %s ', $operator, now()->timestamp);
 
-                if ($isFavorite) {
-                    $favoriteTaskIds = auth()->user()->favorites->pluck('id')->all();
-                    ($favoriteTaskIds)
-                        ? $options['filter'][] = sprintf('id = %s', implode(' OR id = ', $favoriteTaskIds))
-                        : $options['filter'][] = sprintf('id IS NULL');
-                }
+            if ($isFavorite) {
+                $favoriteTaskIds = auth()->user()->favorites->pluck('id')->all();
 
-                $options['filter'][] = sprintf('user_id %s %s', '=', $user->id);
+                ($favoriteTaskIds)
+                    ? $options['filter'][] = sprintf('id = %s', implode(' OR id = ', $favoriteTaskIds))
+                    : $options['filter'][] = sprintf('id IS NULL');
+            }
 
-                return $meiliSearch->search($query, $options);
-            });
-        }
+            $options['filter'][] = sprintf('user_id %s %s', '=', $user->id);
+
+            return $meiliSearch->search($query, $options);
+        });
 
         ($data) && $tasks = $query->get();
 

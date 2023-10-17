@@ -1,5 +1,4 @@
 [![Coverage Status](https://coveralls.io/repos/github/phuong-bui-88/task-vue/badge.svg)](https://coveralls.io/github/phuong-bui-88/task-vue)
-
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

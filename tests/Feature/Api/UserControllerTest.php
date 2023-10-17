@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
+use Laravel\Socialite\Facades\Socialite;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -51,6 +52,47 @@ class UserControllerTest extends TestCase
 
         // Assert that the response has a 401 status code
         $response->assertStatus(404);
+
+        $user = User::factory(1)->create([
+            'email' => 'test@example.com',
+            'name' => 'admin',
+            'password' => bcrypt('password'),
+        ]);
+
+        $response = $this->json('POST', '/api/user/login', [
+            'name' => 'admin',
+            'password' => 'invalidpassword',
+        ]);
+
+        // Assert that the response has a 401 status code
+        $response->assertStatus(404);
+    }
+
+    public function testLogoutUser()
+    {
+        // Send a POST request to the login route with invalid credentials
+        $response = $this->json('GET', 'api/user/logout');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => 'Logged out successfully',
+        ]);
+
+        $user = User::factory(1)->create([
+            'email' => 'test@example.com',
+            'name' => 'admin',
+            'password' => bcrypt('password'),
+        ]);
+
+        $response = $this->json('POST', '/api/user/login', [
+            'name' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $response = $this->json('GET', 'api/user/logout');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => 'Logged out successfully',
+        ]);
     }
 
     public function testStoreUser()
@@ -133,5 +175,33 @@ class UserControllerTest extends TestCase
 
         // Assert that the response has a 422 status code
         $response->assertStatus(404);
+    }
+
+    public function testRedirectToGoogle()
+    {
+        // Mock the Socialite::driver('google')->redirect() method
+        Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+        Socialite::shouldReceive('redirect')->andReturn('http://example.com');
+
+        $response = $this->get('/auth/google'); // Replace with your actual route
+        $content = $response->getContent();
+        $response->assertStatus(200); // Assuming you are redirecting
+        $this->assertEquals($content, 'http://example.com');
+    }
+
+    public function testHandleGoogleCallback()
+    {
+        // Mock the Socialite::driver('google')->stateless()->user() method
+        Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+        $fakeUser = new \Laravel\Socialite\Two\User();
+        $fakeUser->map(['id' => '123456', 'name' => 'some_one', 'email' => 'test@gmail.com', 'token' => 'your_access_token', 'code' => 'valid_code']);
+
+        Socialite::shouldReceive('stateless')->andReturnSelf();
+        Socialite::shouldReceive('user')->andReturn($fakeUser);
+
+        $response = $this->get('/auth/google/callback'); // Replace with your actual route
+
+        // Assert the response, for example, if you expect a 302 redirect
+        $response->assertStatus(302);
     }
 }

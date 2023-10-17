@@ -37,7 +37,7 @@ class UserController extends Controller
             $verify['name'] = $name;
         }
 
-        if (!$user) {
+        if (!$user->exists()) {
             throw new InvalidLoginException();
         }
 
@@ -126,7 +126,7 @@ class UserController extends Controller
             Auth::logout();
 
             return response()->json([
-            'success'   => 'Logged out successfully',
+                'success'   => 'Logged out successfully',
             ]);
         }
 
@@ -145,6 +145,7 @@ class UserController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
+
         $user = User::findOrCreateGoogleAuth($googleUser);
         $token = $user->createToken('auth-token')->plainTextToken;
 
