@@ -23,6 +23,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
+        "brainmaestro/composer-git-hooks": "^3.0@alpha",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
@@ -63,24 +64,19 @@
             "dont-discover": []
         },
         "hooks": {
-//            "pre-commit": [
-//                "echo committing as $(git config user.name)",
-//                "php-cs-fixer fix ."
-//            ],
-//            // verify commit message. ex: ABC-123: Fix everything
-//            "commit-msg": "grep -q '[A-Z]+-[0-9]+.*' $1",
-//            "pre-push": [
-//                "php-cs-fixer fix --dry-run .", // check style
-//                "phpunit"
-//            ],
+            "pre-commit": [
+                "echo committing as $(git config user.name)",
+                "php-cs-fixer fix ."
+            ],
+            "commit-msg": "grep -q '[A-Z]+-[0-9]+.*' $1",
             "config": {
                 "stop-on-failure": ["pre-push"]
             },
             "pre-push": [
                 "php-cs-fixer fix --dry-run --stop-on-violation .",
                 "phpunit"
-            ],
-        },
+            ]
+        }
     },
     "config": {
         "optimize-autoloader": true,
