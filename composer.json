@@ -27,6 +27,7 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
+        "nunomaduro/larastan": "^2.0",
         "phpunit/phpunit": "^9.5.10",
         "spatie/laravel-ignition": "^1.0"
     },
@@ -60,7 +61,19 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        }
+        },
+        "hooks": {
+            "pre-commit": [
+                "echo committing as $(git config user.name)",
+                "php-cs-fixer fix ."
+            ],
+            // verify commit message. ex: ABC-123: Fix everything
+            "commit-msg": "grep -q '[A-Z]+-[0-9]+.*' $1",
+            "pre-push": [
+                "php-cs-fixer fix --dry-run .", // check style
+                "phpunit"
+            ],
+        },
     },
     "config": {
         "optimize-autoloader": true,

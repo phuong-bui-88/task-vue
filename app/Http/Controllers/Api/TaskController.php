@@ -7,16 +7,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Jobs\ProcessCalendarTask;
 use App\Models\Task;
-use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Spatie\GoogleCalendar\Event;
-use MeiliSearch\Endpoints\Indexes;
-
-use Gelf\Message;
-use Gelf\Publisher;
-use Gelf\Transport\UdpTransport;
 
 class TaskController extends Controller
 {
@@ -84,7 +75,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  StoreTaskRequest  $request
      * @return TaskResource
      */
     public function store(StoreTaskRequest $request)
@@ -112,8 +103,9 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Task  $task
+     * @param  StoreTaskRequest  $request
+     *
      * @return \Illuminate\Http\Response|string
      */
     public function update(Task $task, StoreTaskRequest $request)
@@ -130,7 +122,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Task $task
      * @return \Illuminate\Http\Response|string
      */
     public function destroy(Task $task)

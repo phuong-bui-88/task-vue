@@ -1,0 +1,21 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Level 9 is the highest level
+    level: 5
+    treatPhpDocTypesAsCertain: false
+    universalObjectCratesClasses:
+        - Illuminate\Http\Resources\Json\JsonResource
+#    ignoreErrors:
+#        - 'Access to an undefined property Spatie\\GoogleCalendar\\[Event::a-zA-Z]#'
+#
+    excludePaths:
+        - app/Jobs/ProcessCalendarTask.php
+        - app/Providers/ScoutMacroServiceProvider.php
+#
+#    checkMissingIterableValueType: false

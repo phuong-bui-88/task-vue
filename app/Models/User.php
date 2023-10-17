@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Mail\ResetPasswordEmail;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -72,7 +73,7 @@ class User extends Authenticatable implements CanResetPassword
     }
 
 
-    public function favorites()
+    public function favorites(): BelongsToMany
     {
         return $this->belongsToMany(Task::class, 'favorites')->withTimestamps();
     }

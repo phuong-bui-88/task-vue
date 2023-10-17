@@ -76,8 +76,8 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  UserRequest $request
+     * @return \Illuminate\Http\Response|string
      */
     public function forgotPassword(UserRequest $request)
     {

@@ -3,9 +3,12 @@
 namespace App\Http\Resources;
 
 use App\Http\Constants\ConstantBase;
-use Carbon\Carbon;
+use App\Models\Task;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Task
+ */
 class TaskResource extends JsonResource
 {
     /**

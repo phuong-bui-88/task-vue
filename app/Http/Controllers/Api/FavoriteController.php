@@ -11,7 +11,7 @@ class FavoriteController extends Controller
     {
         $user = auth()->user();
         $user->favorites()->attach($task);
-        info("Favorite task: {$task->title} and user: {$user->name}", $task->toArray(), $user->toArray());
+        info("Favorite task: {$task->title} and user: {$user->name}", $task->toArray());
         return response()->json(['message' => 'Task favorited']);
     }
 
@@ -19,7 +19,7 @@ class FavoriteController extends Controller
     {
         $user = auth()->user();
         $user->favorites()->detach($task);
-        info("Unfavorite task: {$task->title} and user: {$user->name}", $task->toArray(), $user->toArray());
+        info("Unfavorite task: {$task->title} and user: {$user->name}", $task->toArray());
         return response()->json(['message' => 'Task unfavorited']);
     }
 }

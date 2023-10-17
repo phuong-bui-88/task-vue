@@ -6,6 +6,7 @@ use Laravel\Scout\Builder;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
 
+
 class ScoutMacroServiceProvider extends ServiceProvider
 {
     /**
